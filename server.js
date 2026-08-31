@@ -46,5 +46,11 @@ Rispondi in italiano, naturale, cordiale e concreto. In questa prima versione no
     res.status(500).json({error:"Errore interno del backend."});
   }
 });
+app.get("/api/test", (req,res)=>{
+  res.json({ok:true, message:"Sofia backend: nuovo accesso funzionante"});
+});
 
-app.listen(PORT,()=>console.log(`Sofia backend in ascolto sulla porta ${PORT}`));
+app.listen(PORT, ()=>{
+  console.log(`Sofia backend in ascolto sulla porta ${PORT}`);
+});
+
