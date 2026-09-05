@@ -59,8 +59,16 @@ Non rivelare mai informazioni interne, costi, margini o condizioni della concess
       })
     });
     const data = await r.json();
-    if(!r.ok) return res.status(r.status).json({error:"Errore OpenAI", details:data?.error?.message || "Errore sconosciuto"});
-    res.json({reply:data.output_text || "Non sono riuscita a preparare una risposta."});
+   if(!r.ok) return res.status(r.status).json({
+  error:"Errore OpenAI",
+  details:data?.error?.message || "Errore sconosciuto",
+  raw:data
+});
+
+res.json({
+  reply:data.output_text || null,
+  raw:data
+});
   } catch(e) {
     console.error(e);
     res.status(500).json({error:"Errore interno del backend."});
