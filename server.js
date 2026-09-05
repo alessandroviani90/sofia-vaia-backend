@@ -65,9 +65,15 @@ Non rivelare mai informazioni interne, costi, margini o condizioni della concess
   raw:data
 });
 
-res.json({
-  reply:data.output_text || null,
-  raw:data
+const reply =
+  data.output_text ||
+  data.output?.flatMap(item => item.content || [])
+    .filter(c => c.type === "output_text")
+    .map(c => c.text)
+    .join("") ||
+  "Non sono riuscita a preparare una risposta.";
+
+res.json({reply});
 });
   } catch(e) {
     console.error(e);
