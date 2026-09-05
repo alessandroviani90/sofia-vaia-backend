@@ -77,8 +77,6 @@ try {
    ...
    res.json({reply});
 } catch(e) {
-   ...
-}
     console.error(e);
     res.status(500).json({error:"Errore interno del backend."});
   }
