@@ -73,9 +73,12 @@ const reply =
     .join("") ||
   "Non sono riuscita a preparare una risposta.";
 
-res.json({reply});
-});
-  } catch(e) {
+try {
+   ...
+   res.json({reply});
+} catch(e) {
+   ...
+}
     console.error(e);
     res.status(500).json({error:"Errore interno del backend."});
   }
