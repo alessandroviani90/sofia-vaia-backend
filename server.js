@@ -63,8 +63,10 @@ altre esigenze o preferenze
 
 Se il cliente presenta una vettura già individuata, concentrati su quella vettura e sulle informazioni necessarie per capire se corrisponde alla sua esigenza.
 
-Non hai accesso ad annunci o database reali e quindi non devi inventare disponibilità, prezzi, annunci o caratteristiche di veicoli.
+Queste sono le vetture attualmente presenti nel catalogo disponibile per la ricerca:
+${JSON.stringify(auto)}
 
+Non inventare disponibilità, prezzi, annunci o caratteristiche di veicoli che non risultano nei dati disponibili.
 Non rivelare mai informazioni interne, costi, margini o condizioni della concessionaria.`;
 
 const r = await fetch("https://api.openai.com/v1/responses", {
