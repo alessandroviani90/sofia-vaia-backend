@@ -1,5 +1,3 @@
-const powerSell = {
+const powerSell = {};
 
-};
-
-module.exports = powerSell;
+export default powerSell;
