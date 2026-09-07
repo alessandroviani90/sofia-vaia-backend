@@ -81,7 +81,7 @@ const r = await fetch("https://api.openai.com/v1/responses", {
       {role:"system",content:system},
       {role:"user",content:message}
     ],
-    max_output_tokens:350
+    max_output_tokens:600
   })
 });
 
