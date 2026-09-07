@@ -1,5 +1,6 @@
 import express from "express";
 import powerSell from "./data/powersell.js";
+import auto from "./data/auto.js";
 const app = express();
 const PORT = process.env.PORT || 3000;
 const KEY = process.env.OPENAI_API_KEY;
