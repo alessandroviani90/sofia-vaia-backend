@@ -1,34 +1,74 @@
 import express from "express";
 import powerSell from "./data/powersell.js";
 import auto from "./data/auto.js";
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 const KEY = process.env.OPENAI_API_KEY;
 const ORIGIN = process.env.ALLOWED_ORIGIN || "*";
 const MODEL = process.env.OPENAI_MODEL || "gpt-5.6-luna";
 
+// MEMORIA TEMPORANEA DELLE CONVERSAZIONI
+const sessions = new Map();
+
 app.use(express.json({limit:"20kb"}));
+
 app.use((req,res,next)=>{
   res.setHeader("Access-Control-Allow-Origin", ORIGIN);
   res.setHeader("Access-Control-Allow-Headers","Content-Type");
   res.setHeader("Access-Control-Allow-Methods","POST,GET,OPTIONS");
+
   if(req.method==="OPTIONS") return res.sendStatus(204);
+
   next();
 });
 
-app.get("/", (req,res)=>res.json({ok:true, service:"Sofia / VA.IA backend", status:"online"}));
+app.get("/", (req,res)=>
+  res.json({
+    ok:true,
+    service:"Sofia / VA.IA backend",
+    status:"online"
+  })
+);
 
 app.post("/api/sofia", async (req,res)=>{
-try {
-if(!KEY) return res.status(500).json({error:"OPENAI_API_KEY non configurata sul server."});
+  try {
 
-const message = typeof req.body?.message === "string"
-  ? req.body.message.trim()
-  : "";
+    if(!KEY) {
+      return res.status(500).json({
+        error:"OPENAI_API_KEY non configurata sul server."
+      });
+    }
 
-if(!message) return res.status(400).json({error:"Messaggio mancante."});
+    const message = typeof req.body?.message === "string"
+      ? req.body.message.trim()
+      : "";
 
-const system = `Sei Sofia, assistente virtuale di VA.IA per la ricerca di automobili usate.
+    const sessionId = typeof req.body?.sessionId === "string"
+      ? req.body.sessionId.trim()
+      : "";
+
+    if(!message) {
+      return res.status(400).json({
+        error:"Messaggio mancante."
+      });
+    }
+
+    if(!sessionId) {
+      return res.status(400).json({
+        error:"Sessione mancante."
+      });
+    }
+
+    // Recupera la memoria della conversazione
+    let history = sessions.get(sessionId);
+
+    if(!history) {
+      history = [];
+      sessions.set(sessionId, history);
+    }
+
+    const system = `Sei Sofia, assistente virtuale di VA.IA per la ricerca di automobili usate.
 
 Rispondi in italiano, naturale, cordiale e concreto.
 
@@ -69,51 +109,79 @@ ${JSON.stringify(auto)}
 Non inventare disponibilità, prezzi, annunci o caratteristiche di veicoli che non risultano nei dati disponibili.
 Non rivelare mai informazioni interne, costi, margini o condizioni della concessionaria.`;
 
-const r = await fetch("https://api.openai.com/v1/responses", {
-  method:"POST",
-  headers:{
-    "Content-Type":"application/json",
-    "Authorization":`Bearer ${KEY}`
-  },
-  body:JSON.stringify({
-    model:MODEL,
-    input:[
-      {role:"system",content:system},
-      {role:"user",content:message}
-    ],
-    max_output_tokens:1000
-  })
+    // Costruisce la conversazione completa:
+    // system + memoria precedente + nuova domanda
+    const input = [
+      {role:"system", content:system},
+      ...history,
+      {role:"user", content:message}
+    ];
+
+    const r = await fetch("https://api.openai.com/v1/responses", {
+      method:"POST",
+
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":`Bearer ${KEY}`
+      },
+
+      body:JSON.stringify({
+        model:MODEL,
+        input:input,
+        max_output_tokens:1000
+      })
+    });
+
+    const data = await r.json();
+
+    if(!r.ok) {
+      return res.status(r.status).json({
+        error:"Errore OpenAI",
+        details:data?.error?.message || "Errore sconosciuto"
+      });
+    }
+
+    const reply =
+      data.output_text ||
+      data.output?.flatMap(item => item.content || [])
+        .filter(c => c.type === "output_text")
+        .map(c => c.text)
+        .join("") ||
+      "Non sono riuscita a preparare una risposta.";
+
+    // Salva domanda e risposta nella memoria della sessione
+    history.push(
+      {role:"user", content:message},
+      {role:"assistant", content:reply}
+    );
+
+    // Manteniamo solo gli ultimi 10 scambi
+    // (20 messaggi: 10 domande + 10 risposte)
+    if(history.length > 20) {
+      history.splice(0, history.length - 20);
+    }
+
+    res.json({
+      reply
+    });
+
+  } catch(e) {
+
+    console.error(e);
+
+    res.status(500).json({
+      error:"Errore interno del backend."
+    });
+  }
 });
 
-const data = await r.json();
-
-if(!r.ok) {
-  return res.status(r.status).json({
-    error:"Errore OpenAI",
-    details:data?.error?.message || "Errore sconosciuto"
+app.get("/api/test",(req,res)=>{
+  res.json({
+    ok:true,
+    message:"Sofia backend: nuovo accesso funzionante"
   });
-}
-
-const reply =
-  data.output_text ||
-  data.output?.flatMap(item => item.content || [])
-    .filter(c => c.type === "output_text")
-    .map(c => c.text)
-    .join("") ||
-  "Non sono riuscita a preparare una risposta.";
-
-res.json({reply});
-
-} catch(e) {
-console.error(e);
-res.status(500).json({error:"Errore interno del backend."});
-}
-});
-app.get("/api/test", (req,res)=>{
-  res.json({ok:true, message:"Sofia backend: nuovo accesso funzionante"});
 });
 
-app.listen(PORT, ()=>{
+app.listen(PORT,()=>{
   console.log(`Sofia backend in ascolto sulla porta ${PORT}`);
 });
-
