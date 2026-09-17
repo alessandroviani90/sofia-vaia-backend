@@ -4,6 +4,7 @@ const auto = [
     marca: "Fiat",
     modello: "500X",
     versione: "1.3 MJT Connect 95 CV",
+    colore: "nero pastello",
     anno: 2021,
     km: 72000,
     prezzo: 12490,
@@ -18,6 +19,7 @@ const auto = [
     marca: "Fiat",
     modello: "500C",
     versione: "1.2 GQ 69 CV Collection",
+    colore: "Bordeaux metallizzato ",
     anno: 2015,
     km: 79000,
     prezzo: 8500,
@@ -32,6 +34,7 @@ const auto = [
     marca: "Fiat",
     modello: "Tipo",
     versione: "5p 1.6 MJT S-Design 120 CV",
+    colore: "Blu pastello",
     anno: 2018,
     km: 79000,
     prezzo: 9400,
@@ -46,6 +49,7 @@ const auto = [
     marca: "Ford",
     modello: "Tourneo Courier",
     versione: "1.0 EcoBoost Sport",
+    colore: "rosso pastello",
     anno: 2019,
     km: 129000,
     prezzo: 8500,
@@ -68,9 +72,10 @@ const auto = [
     potenza_cv: 95,
     localita: "Padova",
     stato: "disponibile"
-  }
-];
-id: 6,
+  },
+  {
+
+    id: 6,
     marca: "Fiat",
     modello: "1.0 firefly hybrid ",
    versione: "pop",
