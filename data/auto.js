@@ -12,6 +12,7 @@ const auto = [
     cambio: "manuale",
     potenza_cv: 95,
     localita: "Padova",
+    azienda: "ZLmotors",
     stato: "disponibile"
   },
   {
@@ -27,6 +28,7 @@ const auto = [
     cambio: "manuale",
     potenza_cv: 69,
     localita: "Padova",
+    azienda: "ZLmotors",
     stato: "disponibile"
   },
   {
@@ -42,6 +44,7 @@ const auto = [
     cambio: "manuale",
     potenza_cv: 120,
     localita: "Padova",
+    azienda: "ZLmotors",
     stato: "disponibile"
   },
   {
@@ -71,6 +74,7 @@ const auto = [
     cambio: "manuale",
     potenza_cv: 95,
     localita: "Padova",
+     azienda: "ZLmotors",
     stato: "disponibile"
   },
   {
