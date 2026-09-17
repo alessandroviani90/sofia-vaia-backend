@@ -146,20 +146,22 @@ const auto = [
   },
 
 {
-    id: 10,
-    marca: "Dacia",
-    modello: "Duster dci ",
-   versione: "Laureate 4x2",
-   colore: "nero",
-    anno: 2015,
-    km: 166000,
-    prezzo: 7500,
-    alimentazione: "diesel",
-    cambio: "manuale",
-    potenza_cv:110 ,
-    localita: "Cologno Monzese Milano ",
-    azienda: "Mini car",
-    stato: "disponibile",
-  },
+  {
+  id: 10,
+  marca: "Dacia",
+  modello: "Duster dci ",
+  versione: "Laureate 4x2",
+  colore: "nero",
+  anno: 2015,
+  km: 166000,
+  prezzo: 7500,
+  alimentazione: "diesel",
+  cambio: "manuale",
+  potenza_cv: 110,
+  localita: "Cologno Monzese Milano",
+  azienda: "Mini car",
+  stato: "disponibile"
+  }
+];
 
 export default auto;
