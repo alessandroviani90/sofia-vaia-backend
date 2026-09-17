@@ -146,7 +146,6 @@ const auto = [
   },
 
 {
-  {
   id: 10,
   marca: "Dacia",
   modello: "Duster dci ",
