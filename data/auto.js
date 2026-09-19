@@ -163,4 +163,9 @@ const auto = [
   }
 ];
 
+const fontiWeb = [
+  "https://www.autoscout24.it/concessionari/z-l-motors-di-zagani-lulzim",
+  "https://www.automobile.it/concessionari/brama-auto/16123"
+];
+
 export default auto;
