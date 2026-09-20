@@ -9,6 +9,11 @@ const PORT = process.env.PORT || 3000;
 const KEY = process.env.OPENAI_API_KEY;
 const ORIGIN = process.env.ALLOWED_ORIGIN || "*";
 const MODEL = process.env.OPENAI_MODEL || "gpt-5.6-luna";
+const oauth2Client = new google.auth.OAuth2(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET,
+  process.env.GOOGLE_REDIRECT_URI
+);
 
 // MEMORIA TEMPORANEA DELLE CONVERSAZIONI
 const sessions = new Map();
