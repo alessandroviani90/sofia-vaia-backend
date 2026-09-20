@@ -49,6 +49,27 @@ app.get("/auth/google", (req,res)=>{
   res.redirect(url);
 });
 
+app.get("/auth/google/callback", async (req,res)=>{
+  try {
+    const { code } = req.query;
+
+    if(!code) {
+      return res.status(400).send("Codice di autorizzazione mancante.");
+    }
+
+    const { tokens } = await oauth2Client.getToken(code);
+
+    oauth2Client.setCredentials(tokens);
+
+    res.send("Sofia è stata collegata a Google. ❤️");
+
+  } catch(e) {
+    console.error(e);
+
+    res.status(500).send("Errore durante il collegamento con Google.");
+  }
+});
+
 app.post("/api/sofia", async (req,res)=>{
   try {
 
