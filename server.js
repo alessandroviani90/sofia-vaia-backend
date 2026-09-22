@@ -9,6 +9,13 @@ const PORT = process.env.PORT || 3000;
 const KEY = process.env.OPENAI_API_KEY;
 const ORIGIN = process.env.ALLOWED_ORIGIN || "*";
 const MODEL = process.env.OPENAI_MODEL || "gpt-5.6-luna";
+console.log(
+  "GOOGLE_CLIENT_SECRET presente:",
+  !!process.env.GOOGLE_CLIENT_SECRET,
+  "lunghezza:",
+  process.env.GOOGLE_CLIENT_SECRET?.length
+);
+
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
