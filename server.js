@@ -93,6 +93,46 @@ function createRawEmail({to, subject, body}) {
     .replace(/\//g, "_")
     .replace(/=+$/, "");
 }
+app.get("/api/test-gmail", async (req,res)=>{
+  try {
+
+    const gmail = google.gmail({
+      version:"v1",
+      auth:oauth2Client
+    });
+
+    const raw = createRawEmail({
+      to: "TUO_INDIRIZZO_EMAIL",
+      subject: "Test Sofia ❤️",
+      body: "Questa è una mail inviata automaticamente da Sofia tramite VA.IA."
+    });
+
+    const result = await gmail.users.messages.send({
+      userId: "me",
+      requestBody: {
+        raw
+      }
+    });
+
+    res.json({
+      ok:true,
+      message:"Mail inviata da Sofia",
+      id:result.data.id
+    });
+
+  } catch(e) {
+
+    console.error(e?.response?.data || e);
+
+    res.status(500).json({
+      ok:false,
+      error:
+        e?.response?.data?.error?.message ||
+        e.message ||
+        "Errore Gmail"
+    });
+  }
+});
 
 app.post("/api/sofia", async (req,res)=>{
   try {
