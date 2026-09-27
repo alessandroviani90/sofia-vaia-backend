@@ -78,6 +78,22 @@ app.get("/auth/google/callback", async (req,res)=>{
   }
 });
 
+function createRawEmail({to, subject, body}) {
+  const message = [
+    `To: ${to}`,
+    `Subject: ${subject}`,
+    "Content-Type: text/plain; charset=utf-8",
+    "",
+    body
+  ].join("\r\n");
+
+    return Buffer.from(message)
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+}
+
 app.post("/api/sofia", async (req,res)=>{
   try {
 
