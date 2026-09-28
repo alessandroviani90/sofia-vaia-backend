@@ -135,26 +135,6 @@ const result = await gmail.users.messages.send({
   }
 });
 
-    res.json({
-      ok:true,
-      message:"Mail inviata da Sofia",
-      id:result.data.id
-    });
-
-  } catch(e) {
-
-    console.error(e?.response?.data || e);
-
-    res.status(500).json({
-      ok:false,
-      error:
-        e?.response?.data?.error?.message ||
-        e.message ||
-        "Errore Gmail"
-    });
-  }
-});
-
 app.post("/api/sofia", async (req,res)=>{
   try {
 
