@@ -48,9 +48,10 @@ app.get("/", (req,res)=>
 app.get("/auth/google", (req,res)=>{
   const url = oauth2Client.generateAuthUrl({
     access_type:"offline",
-  scope:[
-"https://www.googleapis.com/auth/calendar.events",
-"https://www.googleapis.com/auth/gmail.send"
+ scope:[
+  "https://www.googleapis.com/auth/calendar.events",
+  "https://www.googleapis.com/auth/gmail.readonly",
+  "https://www.googleapis.com/auth/gmail.send"
 ]
   });
 
