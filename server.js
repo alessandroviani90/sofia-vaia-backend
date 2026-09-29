@@ -96,48 +96,6 @@ function createRawEmail({to, subject, body}) {
     .replace(/\//g, "_")
     .replace(/=+$/, "");
 }
-app.get("/api/test-gmail", async (req,res)=>{
-  try {
-
-    const gmail = google.gmail({
-      version:"v1",
-      auth:oauth2Client
-    });
-
-    const raw = createRawEmail({
-      to: "alessandro.viani90@gmail.com",
-      subject: "Test Sofia ❤️",
-      body: "Questa è una mail inviata automaticamente da Sofia tramite VA.IA."
-    });
-
-    const result = await gmail.users.messages.send({
-      userId: "me",
-      requestBody: {
-        raw
-      }
-    });
-
-    res.json({
-      ok:true,
-      message:"Mail inviata da Sofia",
-      id:result.data.id
-    });
-
-  } catch(e) {
-
-    console.error(e?.response?.data || e);
-
-    res.status(500).json({
-      ok:false,
-      error:
-        e?.response?.data?.error?.message ||
-        e.message ||
-        "Errore Gmail"
-    });
-  }
-});
-
-
 app.get("/api/test-gmail-read", async (req,res)=>{
   try {
 
@@ -148,39 +106,66 @@ app.get("/api/test-gmail-read", async (req,res)=>{
 
     const result = await gmail.users.messages.list({
       userId:"me",
-      maxResults:5
+      maxResults:1
     });
 
     const messages = result.data.messages || [];
 
-    const emails = [];
-
-    for(const message of messages){
-
-      const detail = await gmail.users.messages.get({
-        userId:"me",
-        id:message.id,
-        format:"metadata",
-        metadataHeaders:["From","Subject","Date"]
+    if(!messages.length){
+      return res.json({
+        ok:true,
+        message:"Nessuna email trovata."
       });
+    }
 
-      const headers = detail.data.payload?.headers || [];
+    const detail = await gmail.users.messages.get({
+      userId:"me",
+      id:messages[0].id,
+      format:"full"
+    });
 
-      const getHeader = (name) =>
-        headers.find(h => h.name.toLowerCase() === name.toLowerCase())?.value || "";
+    const headers = detail.data.payload?.headers || [];
 
-      emails.push({
-        id:message.id,
-        from:getHeader("From"),
-        subject:getHeader("Subject"),
-        date:getHeader("Date")
-      });
+    const getHeader = (name) =>
+      headers.find(h => h.name.toLowerCase() === name.toLowerCase())?.value || "";
+
+    function decodeBody(data) {
+      if(!data) return "";
+
+      return Buffer.from(
+        data.replace(/-/g, "+").replace(/_/g, "/"),
+        "base64"
+      ).toString("utf8");
+    }
+
+    let body = "";
+
+    const payload = detail.data.payload;
+
+    if(payload?.body?.data){
+      body = decodeBody(payload.body.data);
+    }
+
+    if(!body && payload?.parts){
+      for(const part of payload.parts){
+
+        if(
+          part.mimeType === "text/plain" &&
+          part.body?.data
+        ){
+          body = decodeBody(part.body.data);
+          break;
+        }
+      }
     }
 
     res.json({
       ok:true,
-      count:emails.length,
-      emails
+      id:messages[0].id,
+      from:getHeader("From"),
+      subject:getHeader("Subject"),
+      date:getHeader("Date"),
+      body
     });
 
   } catch(e) {
@@ -196,6 +181,7 @@ app.get("/api/test-gmail-read", async (req,res)=>{
     });
   }
 });
+
 app.post("/api/sofia", async (req,res)=>{
   try {
 
