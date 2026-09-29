@@ -99,24 +99,25 @@ function createRawEmail({to, subject, body}) {
 app.get("/api/test-gmail", async (req,res)=>{
   try {
 
-  const gmail = google.gmail({
-  version:"v1",
-  auth:oauth2Client
-});
+    const gmail = google.gmail({
+      version:"v1",
+      auth:oauth2Client
+    });
 
-const raw = createRawEmail({
-  to: "alessandro.viani90@gmail.com",
-  subject: "Test Sofia ❤️",
-  body: "Questa è una mail inviata automaticamente da Sofia tramite VA.IA."
-});
+    const raw = createRawEmail({
+      to: "alessandro.viani90@gmail.com",
+      subject: "Test Sofia ❤️",
+      body: "Questa è una mail inviata automaticamente da Sofia tramite VA.IA."
+    });
 
-const result = await gmail.users.messages.send({
-  userId: "me",
-  requestBody: {
-    raw
-  }
-});
-        res.json({
+    const result = await gmail.users.messages.send({
+      userId: "me",
+      requestBody: {
+        raw
+      }
+    });
+
+    res.json({
       ok:true,
       message:"Mail inviata da Sofia",
       id:result.data.id
@@ -136,6 +137,65 @@ const result = await gmail.users.messages.send({
   }
 });
 
+
+app.get("/api/test-gmail-read", async (req,res)=>{
+  try {
+
+    const gmail = google.gmail({
+      version:"v1",
+      auth:oauth2Client
+    });
+
+    const result = await gmail.users.messages.list({
+      userId:"me",
+      maxResults:5
+    });
+
+    const messages = result.data.messages || [];
+
+    const emails = [];
+
+    for(const message of messages){
+
+      const detail = await gmail.users.messages.get({
+        userId:"me",
+        id:message.id,
+        format:"metadata",
+        metadataHeaders:["From","Subject","Date"]
+      });
+
+      const headers = detail.data.payload?.headers || [];
+
+      const getHeader = (name) =>
+        headers.find(h => h.name.toLowerCase() === name.toLowerCase())?.value || "";
+
+      emails.push({
+        id:message.id,
+        from:getHeader("From"),
+        subject:getHeader("Subject"),
+        date:getHeader("Date")
+      });
+    }
+
+    res.json({
+      ok:true,
+      count:emails.length,
+      emails
+    });
+
+  } catch(e) {
+
+    console.error(e?.response?.data || e);
+
+    res.status(500).json({
+      ok:false,
+      error:
+        e?.response?.data?.error?.message ||
+        e.message ||
+        "Errore nella lettura Gmail"
+    });
+  }
+});
 app.post("/api/sofia", async (req,res)=>{
   try {
 
