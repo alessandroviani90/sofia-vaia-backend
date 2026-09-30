@@ -68,9 +68,14 @@ app.get("/auth/google/callback", async (req,res)=>{
       return res.status(400).send("Codice di autorizzazione mancante.");
     }
 
-    const { tokens } = await oauth2Client.getToken(code);
+   const { tokens } = await oauth2Client.getToken(code);
 
-    oauth2Client.setCredentials(tokens);
+oauth2Client.setCredentials(tokens);
+
+console.log("TOKEN GOOGLE:");
+console.log("access_token presente:", !!tokens.access_token);
+console.log("refresh_token presente:", !!tokens.refresh_token);
+console.log("scope:", tokens.scope);
 
     res.send("Sofia è stata collegata a Google. ❤️");
 
