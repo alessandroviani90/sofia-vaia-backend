@@ -102,6 +102,7 @@ function createRawEmail({to, subject, body}) {
     .replace(/\//g, "_")
     .replace(/=+$/, "");
 }
+
 app.get("/api/test-gmail-read", async (req,res)=>{
   try {
 
@@ -109,6 +110,87 @@ app.get("/api/test-gmail-read", async (req,res)=>{
       version:"v1",
       auth:oauth2Client
     });
+
+    const result = await gmail.users.messages.list({
+      userId:"me",
+      maxResults:1
+    });
+
+    const messages = result.data.messages || [];
+
+    if(!messages.length){
+      return res.json({
+        ok:true,
+        message:"Nessuna email trovata."
+      });
+    }
+
+    const detail = await gmail.users.messages.get({
+      userId:"me",
+      id:messages[0].id,
+      format:"full"
+    });
+
+    res.json({
+      ok:true,
+      message:detail.data
+    });
+
+  } catch(error) {
+
+    console.error("ERRORE GMAIL:", error);
+
+    res.status(500).json({
+      ok:false,
+      error:error.message
+    });
+
+  }
+});
+
+
+app.get("/api/test-gmail-send", async (req,res)=>{
+  try {
+
+    const gmail = google.gmail({
+      version:"v1",
+      auth:oauth2Client
+    });
+
+    const raw = createRawEmail({
+      to:"alessandro.viani90@gmail.com",
+      subject:"Prova invio email Sofia",
+      body:
+        "Ciao Alessandro,\n\n" +
+        "questa è la prima email inviata da Sofia attraverso Gmail.\n\n" +
+        "Se la ricevi, abbiamo verificato anche l'invio.\n\n" +
+        "Sofia ❤️"
+    });
+
+    const result = await gmail.users.messages.send({
+      userId:"me",
+      requestBody:{
+        raw
+      }
+    });
+
+    res.json({
+      ok:true,
+      message:"Email inviata.",
+      id:result.data.id
+    });
+
+  } catch(e) {
+
+    console.error("ERRORE GMAIL SEND:", e);
+
+    res.status(500).json({
+      ok:false,
+      error:e.message
+    });
+
+  }
+});
 
     const result = await gmail.users.messages.list({
       userId:"me",
