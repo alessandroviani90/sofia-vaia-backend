@@ -1,4 +1,4 @@
-import { createGmail } from "./gmail.js";
+import { createGmail, readLatestEmail } from "./gmail.js";
 import express from "express";
 import powerSell from "./data/powersell.js";
 import auto from "./data/auto.js";
@@ -106,12 +106,24 @@ function createRawEmail({to, subject, body}) {
 app.get("/api/test-gmail-read", async (req,res)=>{
   try {
 
-    const gmail = google.gmail({
-      version:"v1",
-      auth:oauth2Client
+    const gmail = createGmail(oauth2Client);
+
+    const result = await readLatestEmail(gmail);
+
+    res.json(result);
+
+  } catch(e) {
+
+    console.error("ERRORE GMAIL READ:", e);
+
+    res.status(500).json({
+      ok:false,
+      error:e.message || "Errore durante la lettura Gmail."
     });
 
-    
+  }
+});    
+
 app.post("/api/sofia", async (req,res)=>{
   try {
 
