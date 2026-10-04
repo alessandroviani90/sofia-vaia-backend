@@ -122,30 +122,69 @@ app.get("/api/test-gmail-read", async (req,res)=>{
     });
 
   }
-});    
+});
+
+
+app.post("/api/test-gmail-send", async (req,res)=>{
+  try {
+
+    const { to, subject, body } = req.body;
+
+    if(!to || !subject || !body) {
+      return res.status(400).json({
+        ok:false,
+        error:"to, subject e body sono obbligatori."
+      });
+    }
+
+    const gmail = createGmail(oauth2Client);
+
+    const raw = createRawEmail({
+      to,
+      subject,
+      body
+    });
+
+    const result = await gmail.users.messages.send({
+      userId:"me",
+      requestBody:{
+        raw
+      }
+    });
+
+    res.json({
+      ok:true,
+      messageId:result.data.id
+    });
+
+  } catch(e) {
+
+    console.error("ERRORE GMAIL SEND:", e);
+
+    res.status(500).json({
+      ok:false,
+      error:e.message || "Errore durante l'invio Gmail."
+    });
+
+  }
+});
 
 app.post("/api/sofia", async (req,res)=>{
   try {
 
-    if(!KEY) {
-      return res.status(500).json({
-        error:"OPENAI_API_KEY non configurata sul server."
-      });
-    }
+const message = typeof req.body?.message === "string"
+  ? req.body.message.trim()
+  : "";
 
-    const message = typeof req.body?.message === "string"
-      ? req.body.message.trim()
-      : "";
+const sessionId = typeof req.body?.sessionId === "string"
+  ? req.body.sessionId.trim()
+  : "";
 
-    const sessionId = typeof req.body?.sessionId === "string"
-      ? req.body.sessionId.trim()
-      : "";
-
-    if(!message) {
-      return res.status(400).json({
-        error:"Messaggio mancante."
-      });
-    }
+if(!message) {
+  return res.status(400).json({
+    error:"Messaggio mancante."
+  });
+}
 
     if(!sessionId) {
       return res.status(400).json({
