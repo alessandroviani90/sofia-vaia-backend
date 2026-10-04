@@ -124,7 +124,6 @@ app.get("/api/test-gmail-read", async (req,res)=>{
   }
 });
 
-
 app.post("/api/test-gmail-send", async (req,res)=>{
   try {
 
@@ -171,6 +170,36 @@ app.post("/api/test-gmail-send", async (req,res)=>{
   }
 });
 
+app.get("/api/test-sofia-reply", async (req,res)=>{
+  try {
+
+    const gmail = createGmail(oauth2Client);
+
+    const email = await readLatestEmail(gmail);
+
+    if(!email.found) {
+      return res.json({
+        ok:false,
+        message:"Nessuna email trovata."
+      });
+    }
+
+    res.json({
+      ok:true,
+      email
+    });
+
+  } catch(e) {
+
+    console.error("ERRORE TEST SOFIA REPLY:", e);
+
+    res.status(500).json({
+      ok:false,
+      error:e.message || "Errore durante il test."
+    });
+
+  }
+});
 app.post("/api/sofia", async (req,res)=>{
   try {
 
