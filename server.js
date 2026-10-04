@@ -86,7 +86,7 @@ console.log("scope:", tokens.scope);
   }
 });
 
-function createRawEmail({to, subject, body}) {
+function createRawEmail({to, subject, body, threadId}) {
   const message = [
   `From: vaia.sofia90@gmail.com`,
   `To: ${to}`,
