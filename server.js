@@ -128,7 +128,7 @@ app.get("/api/test-gmail-read", async (req,res)=>{
 app.post("/api/test-gmail-send", async (req,res)=>{
   try {
 
-    const { to, subject, body } = req.body;
+  const { to, subject, body, threadId } = req.body;
 
     if(!to || !subject || !body) {
       return res.status(400).json({
@@ -148,8 +148,9 @@ app.post("/api/test-gmail-send", async (req,res)=>{
     const result = await gmail.users.messages.send({
       userId:"me",
       requestBody:{
-        raw
-      }
+  raw,
+  threadId
+}
     });
 
     res.json({
