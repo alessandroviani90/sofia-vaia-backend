@@ -142,7 +142,8 @@ app.post("/api/test-gmail-send", async (req,res)=>{
     const raw = createRawEmail({
       to,
       subject,
-      body
+      body,
+      threadId
     });
 
     const result = await gmail.users.messages.send({
