@@ -184,22 +184,39 @@ app.get("/api/test-sofia-reply", async (req,res)=>{
       });
     }
 
+    const raw = createRawEmail({
+      to: email.from,
+      subject: "Re: " + email.subject,
+      body: "Ciao! ❤️\n\nSono Sofia. Ho ricevuto il tuo messaggio e ti rispondo qui, nella stessa conversazione.\n\nA presto,\nSofia",
+      threadId: email.threadId
+    });
+
+    const result = await gmail.users.messages.send({
+      userId:"me",
+      requestBody:{
+        raw,
+        threadId: email.threadId
+      }
+    });
+
     res.json({
       ok:true,
-      email
+      messageId:result.data.id,
+      threadId:email.threadId
     });
 
   } catch(e) {
 
-    console.error("ERRORE TEST SOFIA REPLY:", e);
+    console.error("ERRORE SOFIA REPLY:", e);
 
     res.status(500).json({
       ok:false,
-      error:e.message || "Errore durante il test."
+      error:e.message || "Errore durante la risposta Gmail."
     });
 
   }
 });
+
 app.post("/api/sofia", async (req,res)=>{
   try {
 
