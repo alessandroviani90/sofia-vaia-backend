@@ -26,6 +26,13 @@ oauth2Client.setCredentials({
   refresh_token: process.env.GOOGLE_REFRESH_TOKEN
 });
 
+console.log(
+  "GOOGLE_REFRESH_TOKEN presente:",
+  !!process.env.GOOGLE_REFRESH_TOKEN,
+  "lunghezza:",
+  process.env.GOOGLE_REFRESH_TOKEN?.length
+);
+
 // MEMORIA TEMPORANEA DELLE CONVERSAZIONI
 const sessions = new Map();
 
