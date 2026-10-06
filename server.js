@@ -85,7 +85,6 @@ oauth2Client.setCredentials(tokens);
 console.log("TOKEN GOOGLE:");
 console.log("access_token presente:", !!tokens.access_token);
 console.log("refresh_token presente:", !!tokens.refresh_token);
-console.log("refresh_token:", tokens.refresh_token);
 console.log("scope:", tokens.scope);
 
     res.send("Sofia è stata collegata a Google. ❤️");
