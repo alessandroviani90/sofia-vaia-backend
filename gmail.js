@@ -77,3 +77,29 @@ export async function readLatestEmail(gmail) {
     body
   };
 }
+
+
+export async function sendReply(gmail, { to, subject, body, threadId }) {
+
+  const message = [
+    `To: ${to}`,
+    `Subject: ${subject}`,
+    "Content-Type: text/plain; charset=utf-8",
+    "",
+    body
+  ].join("\r\n");
+
+  const raw = Buffer.from(message)
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+
+  return await gmail.users.messages.send({
+    userId: "me",
+    requestBody: {
+      raw,
+      threadId
+    }
+  });
+}
