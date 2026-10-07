@@ -11,7 +11,7 @@ export async function readLatestEmail(gmail) {
 
   const result = await gmail.users.messages.list({
     userId: "me",
-    maxResults: 1
+    maxResults: 10
   });
 
   const messages = result.data.messages || [];
