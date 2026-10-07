@@ -14,7 +14,7 @@ export async function readLatestEmail(gmail) {
     maxResults: 10
   });
 
-  const messages = result.data.messages || [];
+    const messages = result.data.messages || [];
 
   if (!messages.length) {
     return {
@@ -23,11 +23,35 @@ export async function readLatestEmail(gmail) {
     };
   }
 
-  const detail = await gmail.users.messages.get({
-    userId: "me",
-    id: messages[0].id,
-    format: "full"
-  });
+  let detail = null;
+
+  for (const message of messages) {
+
+    const candidate = await gmail.users.messages.get({
+      userId: "me",
+      id: message.id,
+      format: "full"
+    });
+
+    const headers = candidate.data.payload?.headers || [];
+
+    const from =
+      headers.find(
+        h => h.name.toLowerCase() === "from"
+      )?.value || "";
+
+    if (!from.toLowerCase().includes("vaia.sofia90@gmail.com")) {
+      detail = candidate;
+      break;
+    }
+  }
+
+  if (!detail) {
+    return {
+      found: false,
+      message: "Nessuna email ricevuta da un mittente esterno trovata."
+    };
+  }
 
   const headers = detail.data.payload?.headers || [];
 
