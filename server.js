@@ -195,11 +195,12 @@ app.get("/api/test-sofia-reply", async (req,res)=>{
     }
 
     const result = await sendReply(gmail, {
-      to: email.from,
-      subject: "Re: " + email.subject,
-      body: "Ciao! ❤️\n\nSono Sofia. Ho ricevuto il tuo messaggio e ti rispondo qui, nella stessa conversazione.\n\nA presto,\nSofia",
-      threadId: email.threadId
-    });
+  to: email.from,
+  subject: "Re: " + email.subject,
+  body: "Ciao! ❤️\n\nSono Sofia. Ho ricevuto il tuo messaggio e ti rispondo qui, nella stessa conversazione.\n\nA presto,\nSofia",
+  threadId: email.threadId,
+  messageId: email.messageId
+});
 
     res.json({
       ok:true,
