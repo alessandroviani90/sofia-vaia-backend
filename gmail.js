@@ -93,7 +93,7 @@ export async function readLatestEmail(gmail) {
 
   return {
     found: true,
-    id: messages[0].id,
+    id: detail.data.id,
     threadId: detail.data.threadId,
     messageId: getHeader("Message-ID"),
     from: getHeader("From"),
@@ -104,15 +104,17 @@ export async function readLatestEmail(gmail) {
 }
 
 
-export async function sendReply(gmail, { to, subject, body, threadId }) {
+export async function sendReply(gmail, { to, subject, body, threadId, messageId }) {
 
-  const message = [
-    `To: ${to}`,
-    `Subject: ${subject}`,
-    "Content-Type: text/plain; charset=utf-8",
-    "",
-    body
-  ].join("\r\n");
+ const message = [
+  `To: ${to}`,
+  `Subject: ${subject}`,
+  `In-Reply-To: ${messageId}`,
+  `References: ${messageId}`,
+  "Content-Type: text/plain; charset=utf-8",
+  "",
+  body
+].join("\r\n");
 
   const raw = Buffer.from(message)
     .toString("base64")
