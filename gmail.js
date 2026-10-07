@@ -95,6 +95,7 @@ export async function readLatestEmail(gmail) {
     found: true,
     id: messages[0].id,
     threadId: detail.data.threadId,
+    messageId: getHeader("Message-ID"),
     from: getHeader("From"),
     subject: getHeader("Subject"),
     date: getHeader("Date"),
