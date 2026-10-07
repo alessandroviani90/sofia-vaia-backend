@@ -194,19 +194,11 @@ app.get("/api/test-sofia-reply", async (req,res)=>{
       });
     }
 
-    const raw = createRawEmail({
+    const result = await sendReply(gmail, {
       to: email.from,
       subject: "Re: " + email.subject,
       body: "Ciao! ❤️\n\nSono Sofia. Ho ricevuto il tuo messaggio e ti rispondo qui, nella stessa conversazione.\n\nA presto,\nSofia",
       threadId: email.threadId
-    });
-
-    const result = await gmail.users.messages.send({
-      userId:"me",
-      requestBody:{
-        raw,
-        threadId: email.threadId
-      }
     });
 
     res.json({
@@ -226,7 +218,6 @@ app.get("/api/test-sofia-reply", async (req,res)=>{
 
   }
 });
-
 app.post("/api/sofia", async (req,res)=>{
   try {
 
