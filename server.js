@@ -555,6 +555,86 @@ app.get("/api/test",(req,res)=>{
   });
 });
 
+
+const SOFIA_ALLOWED_SENDERS = new Set([
+  "alessandro.viani90@gmail.com",
+  "gieffeteam@gmail.com"
+]);
+
+const sofiaSeenEmails = new Set();
+let sofiaCheckingEmail = false;
+
+async function checkSofiaInbox() {
+  if (sofiaCheckingEmail) return;
+
+  sofiaCheckingEmail = true;
+
+  try {
+    const gmail = createGmail(oauth2Client);
+    const email = await readLatestEmail(gmail);
+
+    if (!email.found || sofiaSeenEmails.has(email.id)) {
+      return;
+    }
+
+    const match = email.from.match(/<([^>]+)>/);
+    const sender = (match ? match[1] : email.from)
+      .trim()
+      .toLowerCase();
+
+    if (!SOFIA_ALLOWED_SENDERS.has(sender)) {
+      sofiaSeenEmails.add(email.id);
+      console.log("Sofia ignora il mittente:", sender);
+      return;
+    }
+
+    const result = await sendReply(gmail, {
+      to: sender,
+      subject: /^re:/i.test(email.subject || "")
+        ? email.subject
+        : "Re: " + (email.subject || ""),
+      body:
+        "Ciao! ❤️\n\n" +
+        "Sono Sofia. Ho ricevuto il tuo messaggio " +
+        "e ti rispondo qui, nella stessa conversazione.\n\n" +
+        "A presto,\nSofia",
+      threadId: email.threadId,
+      messageId: email.messageId
+    });
+
+    sofiaSeenEmails.add(email.id);
+
+    console.log(
+      "Sofia ha risposto automaticamente:",
+      sender,
+      "Messaggio:",
+      result.data.id
+    );
+  } catch (error) {
+    console.error("Errore controllo posta Sofia:", error.message);
+  } finally {
+    sofiaCheckingEmail = false;
+  }
+}
+
+async function startSofiaInboxMonitor() {
+  try {
+    const gmail = createGmail(oauth2Client);
+    const latest = await readLatestEmail(gmail);
+
+    if (latest.found) {
+      sofiaSeenEmails.add(latest.id);
+    }
+
+    console.log("Monitor Sofia avviato: controllo ogni 60 secondi.");
+  } catch (error) {
+    console.error("Avvio monitor Sofia:", error.message);
+  }
+
+  setInterval(checkSofiaInbox, 60_000);
+}
+
+startSofiaInboxMonitor();
 app.listen(PORT,()=>{
   console.log(`Sofia backend in ascolto sulla porta ${PORT}`);
 });
