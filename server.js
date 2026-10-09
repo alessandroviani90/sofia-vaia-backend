@@ -661,11 +661,8 @@ async function checkSofiaInbox() {
       subject: /^re:/i.test(email.subject || "")
         ? email.subject
         : "Re: " + (email.subject || ""),
-      body:
-        "Ciao! ❤️\n\n" +
-        "Sono Sofia. Ho ricevuto il tuo messaggio " +
-        "e ti rispondo qui, nella stessa conversazione.\n\n" +
-        "A presto,\nSofia",
+     
+body: await generateSofiaEmailReply(email),
       threadId: email.threadId,
       messageId: email.messageId
     });
