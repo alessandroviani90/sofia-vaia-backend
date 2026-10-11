@@ -639,11 +639,15 @@ async function checkSofiaInbox() {
 
   try {
     const gmail = createGmail(oauth2Client);
-    const email = await readLatestEmail(gmail);
+    
+   const email = await readLatestEmail(
+  gmail,
+  sofiaSeenEmails
+);
 
-    if (!email.found || sofiaSeenEmails.has(email.id)) {
-      return;
-    }
+if (!email.found) {
+  return;
+}
 
     const match = email.from.match(/<([^>]+)>/);
     const sender = (match ? match[1] : email.from)
