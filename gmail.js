@@ -7,7 +7,10 @@ export function createGmail(oauth2Client) {
   });
 }
 
-export async function readLatestEmail(gmail) {
+export async function readLatestEmail(
+  gmail,
+  seenEmails = new Set()
+) {
 
   const result = await gmail.users.messages.list({
     userId: "me",
