@@ -549,6 +549,79 @@ REGOLE FONDAMENTALI
   }
 });
 
+const sofiaLabHistory = new Map();
+
+app.post("/api/lab-sofia", async (req, res) => {
+  try {
+    const { message, sessionId } = req.body || {};
+
+    if (!message || !sessionId) {
+      return res.status(400).json({
+        error: "Servono message e sessionId."
+      });
+    }
+
+    let history = sofiaLabHistory.get(sessionId) || [];
+
+    const input = [
+      { role: "system", content: SOFIA_CORE },
+      ...history,
+      { role: "user", content: message }
+    ];
+
+    const r = await fetch(
+      "https://api.openai.com/v1/responses",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${KEY}`
+        },
+        body: JSON.stringify({
+          model: MODEL,
+          input,
+          max_output_tokens: 1000
+        })
+      }
+    );
+
+    const data = await r.json();
+
+    if (!r.ok) {
+      return res.status(r.status).json({
+        error: data?.error?.message || "Errore OpenAI."
+      });
+    }
+
+    const reply = data.output_text ||
+      data.output?.flatMap(item => item.content || [])
+        .filter(item => item.type === "output_text")
+        .map(item => item.text)
+        .join("") ||
+      "Non sono riuscita a preparare una risposta.";
+
+    history.push(
+      { role: "user", content: message },
+      { role: "assistant", content: reply }
+    );
+
+    if (history.length > 20) {
+      history = history.slice(-20);
+    }
+
+    sofiaLabHistory.set(sessionId, history);
+
+    return res.json({ reply });
+
+  } catch (error) {
+    console.error("Errore Sofia Lab:", error);
+
+    return res.status(500).json({
+      error: "Errore interno di Sofia Lab."
+    });
+  }
+});
+
 app.get("/api/test",(req,res)=>{
   res.json({
     ok:true,
