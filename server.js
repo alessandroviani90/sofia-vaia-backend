@@ -3,6 +3,7 @@ import express from "express";
 import powerSell from "./data/powersell.js";
 import auto from "./data/auto.js";
 import { google } from "googleapis";
+import { SOFIA_CORE } from "./sofia-core.js";
 
 const app = express();
 
