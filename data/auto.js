@@ -163,9 +163,11 @@ const auto = [
   }
 ];
 
-const fontiWeb = [
+export const fontiWeb = [
   "https://www.autoscout24.it/concessionari/z-l-motors-di-zagani-lulzim",
-  "https://www.automobile.it/concessionari/brama-auto/16123"
+  "https://www.automobile.it/concessionari/brama-auto/16123",
+  "https://impresapiu.subito.it/shops/49956-privacar-padova-ovest"
 ];
 
 export default auto;
+
