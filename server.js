@@ -568,7 +568,7 @@ app.post("/api/lab-sofia", async (req, res) => {
       ...history,
       { role: "user", content: message }
     ];
-
+ 
     const r = await fetch(
       "https://api.openai.com/v1/responses",
       {
@@ -577,18 +577,18 @@ app.post("/api/lab-sofia", async (req, res) => {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${KEY}`
         },
-        
-
-body: JSON.stringify({
-  model: MODEL,
-  tools: [
-    {
-      type: "web_search"
-    }
-  ],
-  input,
-  max_output_tokens: 2000
-})
+        body: JSON.stringify({
+          model: MODEL,
+          tools: [
+            {
+              type: "web_search"
+            }
+          ],
+          input,
+          max_output_tokens: 2000
+        })
+      }
+    );
 
     const data = await r.json();
 
