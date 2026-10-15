@@ -599,9 +599,10 @@ body: JSON.stringify({
         "dichiara chiaramente che i risultati potrebbero essere parziali."
     }
   ],
-  max_output_tokens: 4000
-})
-
+ max_output_tokens: 4000
+      })
+    }
+  );
 
     const data = await r.json();
 
