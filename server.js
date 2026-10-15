@@ -563,11 +563,27 @@ app.post("/api/lab-sofia", async (req, res) => {
 
     let history = sofiaLabHistory.get(sessionId) || [];
 
-    const input = [
-      { role: "system", content: SOFIA_CORE },
-      ...history,
-      { role: "user", content: message }
-    ];
+const systemLab = `${SOFIA_CORE}
+
+CATALOGO DELLE VETTURE
+Questi sono i dati delle vetture disponibili:
+${JSON.stringify(auto)}
+
+REGOLE DI RICERCA
+- Cerca esclusivamente nel catalogo fornito.
+- Non inventare vetture, prezzi, chilometri o disponibilità.
+- Mostra solo le vetture dei concessionari aderenti a VA-IA,
+  quando l'adesione è identificabile nei dati.
+- Se non puoi verificare l'adesione, non presentare la vettura
+  come appartenente alla rete VA-IA.
+`;
+
+const input = [
+  { role: "system", content: systemLab },
+  ...history,
+  { role: "user", content: message }
+];
+
  
     const r = await fetch(
       "https://api.openai.com/v1/responses",
