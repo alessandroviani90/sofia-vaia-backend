@@ -578,6 +578,7 @@ app.post("/api/lab-sofia", async (req, res) => {
           "Authorization": `Bearer ${KEY}`
         },
         
+
 body: JSON.stringify({
   model: MODEL,
   tools: [
@@ -585,24 +586,9 @@ body: JSON.stringify({
       type: "web_search"
     }
   ],
-  input: [
-    ...input,
-    {
-      role: "user",
-      content:
-        "Esamina il catalogo pubblico di ZL Motors su AutoScout24: " +
-        "https://www.autoscout24.it/concessionari/z-l-motors-di-zagani-lulzim " +
-        "Individua tutte le automobili pubblicate che riesci a trovare. " +
-        "Per ogni vettura indica marca, modello, versione, anno, chilometri, " +
-        "prezzo e link diretto all'annuncio, se disponibile. " +
-        "Non inventare dati. Se non riesci a leggere tutto il catalogo, " +
-        "dichiara chiaramente che i risultati potrebbero essere parziali."
-    }
-  ],
- max_output_tokens: 4000
-      })
-    }
-  );
+  input,
+  max_output_tokens: 2000
+})
 
     const data = await r.json();
 
