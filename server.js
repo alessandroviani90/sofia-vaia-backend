@@ -1,7 +1,7 @@
 import { createGmail, readLatestEmail, sendReply } from "./gmail.js";
 import express from "express";
 import powerSell from "./data/powersell.js";
-import auto from "./data/auto.js";
+import auto, { fontiWeb } from "./data/auto.js";
 import { google } from "googleapis";
 import { SOFIA_CORE } from "./sofia-core.js";
 
