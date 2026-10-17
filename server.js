@@ -565,17 +565,22 @@ app.post("/api/lab-sofia", async (req, res) => {
 
 const systemLab = `${SOFIA_CORE}
 
-CATALOGO DELLE VETTURE
-Questi sono i dati delle vetture disponibili:
-${JSON.stringify(auto)}
+CATALOGHI ESTERNI AUTORIZZATI
+${JSON.stringify(fontiWeb)}
 
 REGOLE DI RICERCA
-- Cerca esclusivamente nel catalogo fornito.
+- Il catalogo interno e i cataloghi esterni autorizzati
+  sono fonti da consultare per cercare vetture.
+- Quando la richiesta richiede vetture non presenti nel
+  catalogo interno, utilizza web_search per cercare nei
+  cataloghi esterni autorizzati.
+- Non limitarti alle vetture contenute nel catalogo interno.
+- Presenta soltanto dati effettivamente verificati.
 - Non inventare vetture, prezzi, chilometri o disponibilità.
-- Mostra solo le vetture dei concessionari aderenti a VA-IA,
-  quando l'adesione è identificabile nei dati.
-- Se non puoi verificare l'adesione, non presentare la vettura
-  come appartenente alla rete VA-IA.
+- Proponi esclusivamente vetture di concessionari aderenti
+  a VA-IA, quando l'adesione è verificabile.
+- Se non puoi verificare l'adesione, non presentare la
+  vettura come appartenente alla rete VA-IA.
 `;
 
 const input = [
