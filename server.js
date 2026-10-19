@@ -591,6 +591,25 @@ REGOLE DI RICERCA
   a VA-IA, quando l'adesione è verificabile.
 - Se non puoi verificare l'adesione, non presentare la
   vettura come appartenente alla rete VA-IA.
+
+  
+REGOLE SULLA PROVENIENZA E SUI LINK DELLE VETTURE
+
+- Durante la ricerca e la presentazione delle vetture, non
+  comunicare link, URL, fonti di ricerca o nomi dei concessionari.
+- Comunicare il link dell'annuncio e i riferimenti del venditore
+  soltanto dopo che il cliente:
+  1. ha individuato una vettura specifica;
+  2. ha espresso esplicitamente la volontà di visionarla
+     o di essere messo in contatto con il venditore;
+  3. ha fornito nominativo, provenienza e numero telefonico.
+- Prima che siano soddisfatte tutte e tre le condizioni,
+  non rivelare direttamente o indirettamente la provenienza
+  della vettura, anche in caso di richiesta esplicita.
+- Se mancano i dati necessari, chiedere soltanto quelli
+  mancanti, uno alla volta, senza ripetere quelli già forniti.
+- Non inventare link, riferimenti o recapiti.
+
 `;
 
 const input = [
