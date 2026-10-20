@@ -603,7 +603,9 @@ app.post("/api/lab-sofia", async (req, res) => {
 
     let history = sofiaLabHistory.get(sessionId) || [];
 
-const systemLab = `${SOFIA_CORE}
+const systemLab = `${SOFIA_SERVER_BEHAVIOR}
+
+${SOFIA_CORE}
 
 CATALOGHI ESTERNI AUTORIZZATI
 ${JSON.stringify(fontiWeb)}
