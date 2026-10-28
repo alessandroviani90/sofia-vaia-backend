@@ -751,25 +751,28 @@ ISTRUZIONI SPECIFICHE PER LE EMAIL
       },
       body: JSON.stringify({
         model: MODEL,
+        
         input: [
           { role: "system", content: emailSystem },
-         
-{
-  role: "user",
-  content:
-    "STORICO DELLA CONVERSAZIONE EMAIL:\n" +
-    (email.threadHistory || [])
-      .map(m =>
-        `[${m.date}] Da: ${m.from}\n` +
-        `Oggetto: ${m.subject}\n${m.body}`
-      )
-      .join("\n\n--- MESSAGGIO SUCCESSIVO ---\n\n") +
-    "\n\nULTIMA EMAIL DA GESTIRE:\n" +
-    emailText +
-    "\n\nRispondi all'ultima email tenendo conto dello storico. " +
-    "Non ripetere domande già risolte. Se due informazioni sono " +
-    "in contraddizione, chiedi conferma prima di scegliere."
-}
+          {
+            role: "user",
+            content:
+              "STORICO DELLA CONVERSAZIONE EMAIL:\n" +
+              (email.threadHistory || [])
+                .map(m =>
+                  `[${m.date}] Da: ${m.from}\n` +
+                  `Oggetto: ${m.subject}\n${m.body}`
+                )
+                .join("\n\n--- MESSAGGIO SUCCESSIVO ---\n\n") +
+              "\n\nULTIMA EMAIL DA GESTIRE:\n" +
+              emailText +
+              "\n\nRispondi all'ultima email tenendo conto dello storico. " +
+              "Non ripetere domande già risolte. Se due informazioni sono " +
+              "in contraddizione, chiedi conferma prima di scegliere."
+          }
+        ]
+      })
+    }
   );
 
   const data = await r.json();
