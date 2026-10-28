@@ -7,60 +7,52 @@ export function createGmail(oauth2Client) {
   });
 }
 
+
 export async function readLatestEmail(
   gmail,
   seenEmails = new Set()
 ) {
-
   const result = await gmail.users.messages.list({
     userId: "me",
     maxResults: 10
   });
 
-    const messages = result.data.messages || [];
+  const messages = result.data.messages || [];
 
   if (!messages.length) {
-    return {
-      found: false,
-      message: "Nessuna email trovata."
-    };
+    return { found: false, message: "Nessuna email trovata." };
   }
 
   let detail = null;
 
-for (const message of messages) {
-  const candidate = await gmail.users.messages.get({
-    userId: "me",
-    id: message.id,
-    format: "full"
-  });
+  for (const message of messages) {
+    const candidate = await gmail.users.messages.get({
+      userId: "me",
+      id: message.id,
+      format: "full"
+    });
 
-  const headers = candidate.data.payload?.headers || [];
+    const headers = candidate.data.payload?.headers || [];
+    const from =
+      headers.find(h => h.name.toLowerCase() === "from")?.value || "";
 
-  const from =
-    headers.find(
-      h => h.name.toLowerCase() === "from"
-    )?.value || "";
-
-  if (
-    !from.toLowerCase().includes("vaia.sofia90@gmail.com") &&
-    !seenEmails.has(candidate.data.id)
-  ) {
-    detail = candidate;
-    break;
+    if (
+      !from.toLowerCase().includes("vaia.sofia90@gmail.com") &&
+      !seenEmails.has(candidate.data.id)
+    ) {
+      detail = candidate;
+      break;
+    }
   }
-}
 
-if (!detail) {
-  return {
-    found: false,
-    message: "Nessuna email ricevuta da un mittente esterno trovata."
-  };
-}
+  if (!detail) {
+    return {
+      found: false,
+      message: "Nessuna nuova email esterna trovata."
+    };
+  }
 
-  const headers = detail.data.payload?.headers || [];
-
-  const getHeader = (name) =>
+  const getHeader = (headers, name) =>
     headers.find(
       h => h.name.toLowerCase() === name.toLowerCase()
     )?.value || "";
@@ -74,37 +66,67 @@ if (!detail) {
     ).toString("utf8");
   }
 
-  let body = "";
+  function extractText(payload) {
+    if (!payload) return "";
 
-  const payload = detail.data.payload;
-
-  if (payload?.body?.data) {
-    body = decodeBody(payload.body.data);
-  }
-
-  if (!body && payload?.parts) {
-    for (const part of payload.parts) {
-
-      if (
-        part.mimeType === "text/plain" &&
-        part.body?.data
-      ) {
-        body = decodeBody(part.body.data);
-        break;
-      }
-
+    if (payload.mimeType === "text/plain" && payload.body?.data) {
+      return decodeBody(payload.body.data);
     }
+
+    for (const part of payload.parts || []) {
+      const text = extractText(part);
+      if (text) return text;
+    }
+
+    if (payload.body?.data && payload.mimeType === "text/html") {
+      return decodeBody(payload.body.data)
+        .replace(/<style[\s\S]*?<\/style>/gi, " ")
+        .replace(/<script[\s\S]*?<\/script>/gi, " ")
+        .replace(/<[^>]*>/g, " ")
+        .replace(/&nbsp;/g, " ")
+        .replace(/&amp;/g, "&")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'");
+    }
+
+    return "";
   }
+
+  const headers = detail.data.payload?.headers || [];
+  const threadId = detail.data.threadId;
+
+  // Recupera l'intera conversazione Gmail.
+  const threadResult = await gmail.users.threads.get({
+    userId: "me",
+    id: threadId,
+    format: "full"
+  });
+
+  const threadMessages = (threadResult.data.messages || [])
+    .map(message => {
+      const h = message.payload?.headers || {};
+
+      return {
+        id: message.id,
+        date: getHeader(h, "Date"),
+        from: getHeader(h, "From"),
+        subject: getHeader(h, "Subject"),
+        body: extractText(message.payload)
+      };
+    });
 
   return {
     found: true,
     id: detail.data.id,
-    threadId: detail.data.threadId,
-    messageId: getHeader("Message-ID"),
-    from: getHeader("From"),
-    subject: getHeader("Subject"),
-    date: getHeader("Date"),
-    body
+    threadId,
+    messageId: getHeader(headers, "Message-ID"),
+    from: getHeader(headers, "From"),
+    subject: getHeader(headers, "Subject"),
+    date: getHeader(headers, "Date"),
+    body: extractText(detail.data.payload),
+    threadHistory: threadMessages
   };
 }
 
