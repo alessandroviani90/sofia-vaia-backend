@@ -753,15 +753,23 @@ ISTRUZIONI SPECIFICHE PER LE EMAIL
         model: MODEL,
         input: [
           { role: "system", content: emailSystem },
-          {
-            role: "user",
-            content:
-              "Rispondi a questa email:\n\n" + emailText
-          }
-        ],
-        max_output_tokens: 1000
-      })
-    }
+         
+{
+  role: "user",
+  content:
+    "STORICO DELLA CONVERSAZIONE EMAIL:\n" +
+    (email.threadHistory || [])
+      .map(m =>
+        `[${m.date}] Da: ${m.from}\n` +
+        `Oggetto: ${m.subject}\n${m.body}`
+      )
+      .join("\n\n--- MESSAGGIO SUCCESSIVO ---\n\n") +
+    "\n\nULTIMA EMAIL DA GESTIRE:\n" +
+    emailText +
+    "\n\nRispondi all'ultima email tenendo conto dello storico. " +
+    "Non ripetere domande già risolte. Se due informazioni sono " +
+    "in contraddizione, chiedi conferma prima di scegliere."
+}
   );
 
   const data = await r.json();
