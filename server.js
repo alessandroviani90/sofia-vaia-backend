@@ -75,63 +75,36 @@ app.get("/auth/google/callback", async (req,res)=>{
   try {
     const { code } = req.query;
 
-    if(!code) {
-      return res.status(400).send("Codice di autorizzazione mancante.");
+    if (!code) {
+      return res.status(400).send(
+        "Codice di autorizzazione mancante."
+      );
     }
 
-   const { tokens } = await oauth2Client.getToken(code);
+    const { tokens } = await oauth2Client.getToken(code);
 
-oauth2Client.setCredentials(tokens);
+    if (!tokens.refresh_token) {
+      return res.status(400).send(
+        "Google non ha restituito un nuovo refresh token. Non modificare Render."
+      );
+    }
 
-console.log("TOKEN GOOGLE:");
-console.log("access_token presente:", !!tokens.access_token);
-console.log("refresh_token presente:", !!tokens.refresh_token);
-console.log("scope:", tokens.scope);
+    oauth2Client.setCredentials(tokens);
 
-    res.send("Sofia è stata collegata a Google. ❤️");
-
-  } catch(e) {
-    console.error(e);
-
-    res.status(500).send("Errore durante il collegamento con Google.");
-  }
-});
-
-function createRawEmail({to, subject, body, threadId}) {
-  const message = [
-  `From: vaia.sofia90@gmail.com`,
-  `To: ${to}`,
-  `Subject: ${subject}`,
-  "Content-Type: text/plain; charset=utf-8",
-  "",
-  body
-].join("\r\n");
-
-    return Buffer.from(message)
-    .toString("base64")
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
-}
-
-app.get("/api/test-gmail-read", async (req,res)=>{
-  try {
-
-    const gmail = createGmail(oauth2Client);
-
-    const result = await readLatestEmail(gmail);
-
-    res.json(result);
+    res.set("Cache-Control", "no-store, no-cache, must-revalidate, private");
+    res.set("Pragma", "no-cache");
+    res.type("text/plain").send(
+      "NUOVO GOOGLE_REFRESH_TOKEN:\n\n" +
+      tokens.refresh_token +
+      "\n\nCopialo e conservalo in modo sicuro. Non condividerlo."
+    );
 
   } catch(e) {
+    console.error("Errore collegamento Google:", e.message);
 
-    console.error("ERRORE GMAIL READ:", e);
-
-    res.status(500).json({
-      ok:false,
-      error:e.message || "Errore durante la lettura Gmail."
-    });
-
+    res.status(500).send(
+      "Errore durante il collegamento con Google."
+    );
   }
 });
 
