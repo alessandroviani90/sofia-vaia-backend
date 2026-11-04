@@ -833,18 +833,24 @@ body: await generateSofiaEmailReply(email),
   }
 }
 
-async function startSofiaInboxMonitor() {
+ async function startSofiaInboxMonitor() {
   try {
     const gmail = createGmail(oauth2Client);
-    const latest = await readLatestEmail(gmail);
 
-    if (latest.found) {
-      sofiaSeenEmails.add(latest.id);
-    }
+    await markExistingInboxAsSeen(
+      gmail,
+      sofiaSeenEmails
+    );
 
-    console.log("Monitor Sofia avviato: controllo ogni 60 secondi.");
+    console.log(
+      "Monitor Sofia avviato: email già presenti registrate."
+    );
+
   } catch (error) {
-    console.error("Avvio monitor Sofia:", error.message);
+    console.error(
+      "Avvio monitor Sofia:",
+      error.message
+    );
   }
 
   setInterval(checkSofiaInbox, 60_000);
