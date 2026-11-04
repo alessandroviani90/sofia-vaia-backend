@@ -1,4 +1,4 @@
-import { createGmail, readLatestEmail, sendReply } from "./gmail.js";
+import { createGmail, readLatestEmail, sendReply, markExistingInboxAsSeen } from "./gmail.js";
 import express from "express";
 import powerSell from "./data/powersell.js";
 import auto, { fontiWeb } from "./data/auto.js";
