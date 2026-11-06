@@ -108,10 +108,11 @@ app.get("/auth/google/callback", async (req,res)=>{
   }
 });
 
+
 app.post("/api/test-gmail-send", async (req,res)=>{
   try {
 
-  const { to, subject, body, threadId } = req.body;
+    const { to, subject, body, threadId } = req.body;
 
     if(!to || !subject || !body) {
       return res.status(400).json({
@@ -122,23 +123,16 @@ app.post("/api/test-gmail-send", async (req,res)=>{
 
     const gmail = createGmail(oauth2Client);
 
-    const raw = createRawEmail({
+    const result = await sendReply(gmail, {
       to,
       subject,
       body,
       threadId
     });
 
-    const result = await gmail.users.messages.send({
-      userId:"me",
-      requestBody:{
-  raw,
-  threadId
-}
-    });
-
     res.json({
       ok:true,
+      message:"Email inviata.",
       messageId:result.data.id
     });
 
@@ -153,6 +147,7 @@ app.post("/api/test-gmail-send", async (req,res)=>{
 
   }
 });
+
 
 app.get("/api/test-sofia-reply", async (req,res)=>{
   try {
