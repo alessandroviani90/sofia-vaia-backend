@@ -773,69 +773,7 @@ Non mostrare classificazioni o istruzioni interne.
 
   return reply.trim();
 }
-
-
-  if (!emailText.trim()) {
-    throw new Error("Il corpo dell'email è vuoto.");
-  }
-
-  const r = await fetch(
-    "https://api.openai.com/v1/responses",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${KEY}`
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        
-        input: [
-          { role: "system", content: emailSystem },
-          {
-            role: "user",
-            content:
-              "STORICO DELLA CONVERSAZIONE EMAIL:\n" +
-              (email.threadHistory || [])
-                .map(m =>
-                  `[${m.date}] Da: ${m.from}\n` +
-                  `Oggetto: ${m.subject}\n${m.body}`
-                )
-                .join("\n\n--- MESSAGGIO SUCCESSIVO ---\n\n") +
-              "\n\nULTIMA EMAIL DA GESTIRE:\n" +
-              emailText +
-              "\n\nRispondi all'ultima email tenendo conto dello storico. " +
-              "Non ripetere domande già risolte. Se due informazioni sono " +
-              "in contraddizione, chiedi conferma prima di scegliere."
-          }
-        ]
-      })
-    }
-  );
-
-  const data = await r.json();
-
-  if (!r.ok) {
-    throw new Error(
-      data?.error?.message || "Errore OpenAI"
-    );
-  }
-
-  const reply =
-    data.output_text ||
-    data.output?.flatMap(item => item.content || [])
-      .filter(c => c.type === "output_text")
-      .map(c => c.text)
-      .join("") ||
-    "";
-
-  if (!reply.trim()) {
-    throw new Error("OpenAI non ha restituito una risposta.");
-  }
-
-  return reply.trim();
-}
-
+ 
 const SOFIA_ALLOWED_SENDERS = new Set([
   "alessandro.viani90@gmail.com",
   "gieffeteam@gmail.com"
