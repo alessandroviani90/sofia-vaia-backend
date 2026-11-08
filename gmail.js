@@ -224,52 +224,51 @@ export async function readPendingEmails(gmail) {
 
     if (!threadId) continue;
 
+  // CONTROLLA SE IL THREAD È GIÀ IN CACHE
+if (!threadCache.has(threadId)) {
 
-    // CONTROLLA SE IL THREAD È GIÀ IN CACHE
-    if (!threadCache.has(threadId)) {
+  const threadResult = await gmail.users.threads.get({
+    userId: "me",
+    id: threadId,
+    format: "full"
+  });
 
-      const threadResult = await gmail.users.threads.get({
-        userId: "me",
-        id: threadId,
-        format: "full"
-      });
+  // RICOSTRUISCE LO STORICO COMPLETO
+  const threadMessages = (
+    threadResult.data.messages || []
+  ).map(item => {
+    const itemHeaders = item.payload?.headers || [];
 
-      // RICOSTRUISCE LO STORICO COMPLETO
-      const threadMessages = (
-        threadResult.data.messages || []
-      ).map(item => {
-        const itemHeaders = item.payload?.headers || [];
+    return {
+      id: item.id,
+      internalDate: Number(item.internalDate || 0),
+      messageId: getHeader(itemHeaders, "Message-ID"),
+      inReplyTo: getHeader(itemHeaders, "In-Reply-To"),
+      references: getHeader(itemHeaders, "References"),
+      date: getHeader(itemHeaders, "Date"),
+      from: getHeader(itemHeaders, "From"),
+      subject: getHeader(itemHeaders, "Subject"),
+      body: extractText(item.payload)
+    };
+  });
 
-       return {
-  id: item.id,
-  internalDate: Number(item.internalDate || 0),
-  messageId: getHeader(itemHeaders, "Message-ID"),
-  inReplyTo: getHeader(itemHeaders, "In-Reply-To"),
-  references: getHeader(itemHeaders, "References"),
-  date: getHeader(itemHeaders, "Date"),
-  from: getHeader(itemHeaders, "From"),
-  subject: getHeader(itemHeaders, "Subject"),
-  body: extractText(item.payload)
-};
+  // ORDINA LO STORICO CRONOLOGICAMENTE
+  threadMessages.sort(
+    (a, b) => a.internalDate - b.internalDate
+  );
 
-      // ORDINA LO STORICO CRONOLOGICAMENTE
-      threadMessages.sort(
-        (a, b) => a.internalDate - b.internalDate
-      );
+  // SALVA IL THREAD PER I PROSSIMI MESSAGGI
+  threadCache.set(threadId, threadMessages);
+}
 
-      // SALVA IL THREAD PER I PROSSIMI MESSAGGI
-      threadCache.set(threadId, threadMessages);
-    }
+// RECUPERA LO STORICO DALLA CACHE
+const threadMessages = threadCache.get(threadId);
 
-
-    // RECUPERA LO STORICO DALLA CACHE
-    const threadMessages = threadCache.get(threadId);
-
-    // INDIVIDUA IL MESSAGGIO DA ELABORARE
-    const currentMessage = threadMessages.find(
-      item => item.id === message.id
-    );
-
+// INDIVIDUA IL MESSAGGIO DA ELABORARE
+const currentMessage = threadMessages.find(
+  item => item.id === message.id
+);
+    
     if (!currentMessage) continue;
 
     pending.push({
