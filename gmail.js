@@ -240,16 +240,17 @@ export async function readPendingEmails(gmail) {
       ).map(item => {
         const itemHeaders = item.payload?.headers || [];
 
-        return {
-          id: item.id,
-          internalDate: Number(item.internalDate || 0),
-          messageId: getHeader(itemHeaders, "Message-ID"),
-          date: getHeader(itemHeaders, "Date"),
-          from: getHeader(itemHeaders, "From"),
-          subject: getHeader(itemHeaders, "Subject"),
-          body: extractText(item.payload)
-        };
-      });
+       return {
+  id: item.id,
+  internalDate: Number(item.internalDate || 0),
+  messageId: getHeader(itemHeaders, "Message-ID"),
+  inReplyTo: getHeader(itemHeaders, "In-Reply-To"),
+  references: getHeader(itemHeaders, "References"),
+  date: getHeader(itemHeaders, "Date"),
+  from: getHeader(itemHeaders, "From"),
+  subject: getHeader(itemHeaders, "Subject"),
+  body: extractText(item.payload)
+};
 
       // ORDINA LO STORICO CRONOLOGICAMENTE
       threadMessages.sort(
