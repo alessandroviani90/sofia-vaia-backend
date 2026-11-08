@@ -833,21 +833,39 @@ async function checkSofiaInbox() {
           continue;
         }
 
-        // CONTROLLO MITTENTE AUTORIZZATO
-        if (!SOFIA_ALLOWED_SENDERS.has(sender)) {
-          await markEmailAsProcessed(
-            gmail,
-            email.id,
-            sofiaProcessedLabelId
-          );
+       // VERIFICA CHE L'EMAIL SIA UNA RISPOSTA
+// A UNA PRECEDENTE EMAIL INVIATA DA SOFIA
 
-          console.log(
-            "Sofia ignora il mittente:",
-            sender
-          );
+const rispostaAEmailSofia = (email.threadHistory || []).some(message => {
 
-          continue;
-        }
+  // Esclude il messaggio attualmente ricevuto
+  if (message.id === email.id) return false;
+
+  const matchPrecedente = (message.from || "").match(/<([^>]+)>/);
+
+  const mittentePrecedente = (
+    matchPrecedente
+      ? matchPrecedente[1]
+      : message.from || ""
+  ).trim().toLowerCase();
+
+  return mittentePrecedente === "vaia.sofia90@gmail.com";
+});
+
+if (!rispostaAEmailSofia) {
+  await markEmailAsProcessed(
+    gmail,
+    email.id,
+    sofiaProcessedLabelId
+  );
+
+  console.log(
+    "Sofia ignora email non collegate a una sua precedente comunicazione:",
+    sender
+  );
+
+  continue;
+}
 
         console.log(
           "Sofia legge una nuova email da:",
