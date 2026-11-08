@@ -780,14 +780,11 @@ Non mostrare classificazioni o istruzioni interne.
   return reply.trim();
 }
  
-const SOFIA_ALLOWED_SENDERS = new Set([
-  "alessandro.viani90@gmail.com",
-  "gieffeteam@gmail.com"
-]);
-
-const sofiaSeenEmails = new Set();
+let sofiaProcessedLabelId = null;
 let sofiaCheckingEmail = false;
 
+
+// CONTROLLO DELLA POSTA SOFIA
 async function checkSofiaInbox() {
   if (sofiaCheckingEmail) return;
 
@@ -795,77 +792,131 @@ async function checkSofiaInbox() {
 
   try {
     const gmail = createGmail(oauth2Client);
-    
-   const email = await readLatestEmail(
-  gmail,
-  sofiaSeenEmails
-);
 
-if (!email.found) {
-  return;
-}
+    if (!sofiaProcessedLabelId) {
+      sofiaProcessedLabelId =
+        await ensureSofiaProcessedLabel(gmail);
+    }
 
-    const match = email.from.match(/<([^>]+)>/);
-    const sender = (match ? match[1] : email.from)
-      .trim()
-      .toLowerCase();
+    console.log("Sofia: controllo posta Gmail...");
 
-    if (!SOFIA_ALLOWED_SENDERS.has(sender)) {
-      sofiaSeenEmails.add(email.id);
-      console.log("Sofia ignora il mittente:", sender);
+    const emails = await readPendingEmails(gmail);
+
+    if (!emails.length) {
+      console.log("Sofia: nessuna nuova email.");
       return;
     }
 
-    const result = await sendReply(gmail, {
-      to: sender,
-      subject: /^re:/i.test(email.subject || "")
-        ? email.subject
-        : "Re: " + (email.subject || ""),
-     
-body: await generateSofiaEmailReply(email),
-      threadId: email.threadId,
-      messageId: email.messageId
-    });
-
-    sofiaSeenEmails.add(email.id);
-
     console.log(
-      "Sofia ha risposto automaticamente:",
-      sender,
-      "Messaggio:",
-      result.data.id
+      "Sofia: trovate",
+      emails.length,
+      "email da controllare."
     );
+
+    for (const email of emails) {
+      try {
+        const match = (email.from || "").match(/<([^>]+)>/);
+
+        const sender = (
+          match ? match[1] : email.from || ""
+        ).trim().toLowerCase();
+
+        // IGNORA LE EMAIL INVIATE DA SOFIA
+        if (sender.includes("vaia.sofia90@gmail.com")) {
+          await markEmailAsProcessed(
+            gmail,
+            email.id,
+            sofiaProcessedLabelId
+          );
+
+          console.log("Sofia: email propria ignorata.");
+          continue;
+        }
+
+        // CONTROLLO MITTENTE AUTORIZZATO
+        if (!SOFIA_ALLOWED_SENDERS.has(sender)) {
+          await markEmailAsProcessed(
+            gmail,
+            email.id,
+            sofiaProcessedLabelId
+          );
+
+          console.log(
+            "Sofia ignora il mittente:",
+            sender
+          );
+
+          continue;
+        }
+
+        console.log(
+          "Sofia legge una nuova email da:",
+          sender
+        );
+
+        const body = await generateSofiaEmailReply(email);
+
+        const result = await sendReply(gmail, {
+          to: sender,
+          subject: /^re:/i.test(email.subject || "")
+            ? email.subject
+            : "Re: " + (email.subject || ""),
+          body,
+          threadId: email.threadId,
+          messageId: email.messageId
+        });
+
+        // REGISTRA SOLO DOPO L'INVIO RIUSCITO
+        await markEmailAsProcessed(
+          gmail,
+          email.id,
+          sofiaProcessedLabelId
+        );
+
+        console.log(
+          "Sofia ha risposto automaticamente:",
+          sender,
+          "Messaggio:",
+          result.data.id
+        );
+
+      } catch (emailError) {
+        console.error(
+          "Errore gestione email:",
+          email.id,
+          emailError.message
+        );
+      }
+    }
+
   } catch (error) {
-    console.error("Errore controllo posta Sofia:", error.message);
+    console.error(
+      "Errore controllo posta Sofia:",
+      error.message
+    );
+
   } finally {
     sofiaCheckingEmail = false;
   }
 }
 
- async function startSofiaInboxMonitor() {
-  try {
-    const gmail = createGmail(oauth2Client);
+// AVVIO MONITOR SOFIA
+async function startSofiaInboxMonitor() {
+  console.log("Avvio monitor Sofia...");
 
-    await markExistingInboxAsSeen(
-      gmail,
-      sofiaSeenEmails
-    );
+  // PRIMO CONTROLLO IMMEDIATO
+  await checkSofiaInbox();
 
-    console.log(
-      "Monitor Sofia avviato: email già presenti registrate."
-    );
-
-  } catch (error) {
-    console.error(
-      "Avvio monitor Sofia:",
-      error.message
-    );
-  }
-
+  // SUCCESSIVAMENTE CONTROLLO OGNI MINUTO
   setInterval(checkSofiaInbox, 60_000);
+
+  console.log(
+    "Monitor Sofia attivo: controllo ogni 60 secondi."
+  );
 }
 
 startSofiaInboxMonitor();
+
 app.listen(PORT,()=>{
   console.log(`Sofia backend in ascolto sulla porta ${PORT}`);
 });
