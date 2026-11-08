@@ -790,6 +790,10 @@ async function checkSofiaInbox() {
 
   sofiaCheckingEmail = true;
 
+  // EVITA DI ELABORARE DUE VOLTE LO STESSO MESSAGGIO
+  // DURANTE QUESTO CICLO
+  const repliedThisCycle = new Set();
+
   try {
     const gmail = createGmail(oauth2Client);
 
@@ -815,14 +819,18 @@ async function checkSofiaInbox() {
 
     for (const email of emails) {
       try {
-        const match = (email.from || "").match(/<([^>]+)>/);
+        const getAddress = value => {
+          const match = (value || "").match(/<([^>]+)>/);
 
-        const sender = (
-          match ? match[1] : email.from || ""
-        ).trim().toLowerCase();
+          return (
+            match ? match[1] : value || ""
+          ).trim().toLowerCase();
+        };
+
+        const sender = getAddress(email.from);
 
         // IGNORA LE EMAIL INVIATE DA SOFIA
-        if (sender.includes("vaia.sofia90@gmail.com")) {
+        if (sender === "vaia.sofia90@gmail.com") {
           await markEmailAsProcessed(
             gmail,
             email.id,
@@ -833,47 +841,106 @@ async function checkSofiaInbox() {
           continue;
         }
 
-       // VERIFICA CHE L'EMAIL SIA UNA RISPOSTA
-// A UNA PRECEDENTE EMAIL INVIATA DA SOFIA
+        const history = email.threadHistory || [];
 
-const rispostaAEmailSofia = (email.threadHistory || []).some(message => {
+        // CERCA UNA PRECEDENTE COMUNICAZIONE DI SOFIA
+        const rispostaAEmailSofia = history.some(message => {
+          if (message.id === email.id) return false;
 
-  // Esclude il messaggio attualmente ricevuto
-  if (message.id === email.id) return false;
+          const mittentePrecedente = getAddress(message.from);
 
-  const matchPrecedente = (message.from || "").match(/<([^>]+)>/);
+          return (
+            mittentePrecedente === "vaia.sofia90@gmail.com" &&
+            Number(message.internalDate || 0) <
+              email.internalDate
+          );
+        });
 
-  const mittentePrecedente = (
-    matchPrecedente
-      ? matchPrecedente[1]
-      : message.from || ""
-  ).trim().toLowerCase();
+        // SE LA CONVERSAZIONE NON È STATA INIZIATA
+        // DA SOFIA, NON DEVE ESSERE GESTITA
+        if (!rispostaAEmailSofia) {
+          await markEmailAsProcessed(
+            gmail,
+            email.id,
+            sofiaProcessedLabelId
+          );
 
-  return mittentePrecedente === "vaia.sofia90@gmail.com";
-});
+          console.log(
+            "Sofia ignora email non collegate a una sua precedente comunicazione:",
+            sender
+          );
 
-if (!rispostaAEmailSofia) {
-  await markEmailAsProcessed(
-    gmail,
-    email.id,
-    sofiaProcessedLabelId
-  );
+          continue;
+        }
 
-  console.log(
-    "Sofia ignora email non collegate a una sua precedente comunicazione:",
-    sender
-  );
+        // IDENTIFICATIVO DEL MESSAGGIO RICEVUTO
+        const currentMessageId = (
+          email.messageId || ""
+        ).trim().toLowerCase();
 
-  continue;
-}
+        if (!currentMessageId) {
+          console.log(
+            "Sofia: Message-ID mancante, email non elaborata:",
+            email.id
+          );
+          continue;
+        }
+
+        // EVITA DI ELABORARE DUE VOLTE
+        // LO STESSO MESSAGGIO NEL CICLO CORRENTE
+        if (repliedThisCycle.has(currentMessageId)) {
+          await markEmailAsProcessed(
+            gmail,
+            email.id,
+            sofiaProcessedLabelId
+          );
+
+          console.log(
+            "Sofia: messaggio già elaborato nel ciclo."
+          );
+
+          continue;
+        }
+
+        // VERIFICA SE SOFIA HA GIÀ RISPOSTO
+        // PROPRIO A QUESTO MESSAGGIO
+        const giaRisposto = history.some(message => {
+          const mittente = getAddress(message.from);
+
+          const riferimento = (
+            message.inReplyTo || ""
+          ).trim().toLowerCase();
+
+          return (
+            mittente === "vaia.sofia90@gmail.com" &&
+            riferimento === currentMessageId
+          );
+        });
+
+        if (giaRisposto) {
+          await markEmailAsProcessed(
+            gmail,
+            email.id,
+            sofiaProcessedLabelId
+          );
+
+          console.log(
+            "Sofia: risposta già inviata, nessun duplicato:",
+            sender
+          );
+
+          continue;
+        }
 
         console.log(
           "Sofia legge una nuova email da:",
           sender
         );
 
+        // GENERA LA RISPOSTA
         const body = await generateSofiaEmailReply(email);
 
+        // INVIA LA RISPOSTA
         const result = await sendReply(gmail, {
           to: sender,
           subject: /^re:/i.test(email.subject || "")
@@ -883,6 +950,9 @@ if (!rispostaAEmailSofia) {
           threadId: email.threadId,
           messageId: email.messageId
         });
+
+        // REGISTRA IL MESSAGGIO NEL CICLO CORRENTE
+        repliedThisCycle.add(currentMessageId);
 
         // REGISTRA SOLO DOPO L'INVIO RIUSCITO
         await markEmailAsProcessed(
