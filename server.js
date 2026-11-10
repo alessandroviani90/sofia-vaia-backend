@@ -978,20 +978,69 @@ if (!rispostaAEmailSofia && !emailIonos) {
           "Sofia legge una nuova email da:",
           sender
         );
-
+      
         // GENERA LA RISPOSTA
-      const body = await generateSofiaEmailReply(email, emailIonos);
+        const body = await generateSofiaEmailReply(email, emailIonos);
+
+        // INDIVIDUA IL DESTINATARIO REALE
+        let recipient = sender;
+
+        if (emailIonos) {
+          const visitorEmailMatch = (email.body || "").match(
+            /(?:E-mail|Email)\s*:\s*([^\s<>"']+@[^\s<>"']+)/i
+          );
+
+          const visitorEmail = visitorEmailMatch
+            ? visitorEmailMatch[1].replace(/[),.;]+$/, "").toLowerCase()
+            : "";
+
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(visitorEmail)) {
+            throw new Error(
+              "Email del visitatore IONOS mancante o non valida. Invio annullato."
+            );
+          }
+
+          recipient = visitorEmail;
+        }
 
         // INVIA LA RISPOSTA
         const result = await sendReply(gmail, {
-          to: sender,
-          subject: /^re:/i.test(email.subject || "")
-            ? email.subject
-            : "Re: " + (email.subject || ""),
+          to: recipient,
+
+          subject: emailIonos
+            ? "Risposta alla tua richiesta - ZL Motors"
+            : /^re:/i.test(email.subject || "")
+              ? email.subject
+              : "Re: " + (email.subject || ""),
+
           body,
-          threadId: email.threadId,
-          messageId: email.messageId
+
+          // IONOS: NUOVA EMAIL, NON THREAD TECNICO
+          ...(!emailIonos
+            ? {
+                threadId: email.threadId,
+                messageId: email.messageId
+              }
+            : {})
         });
+
+        // REGISTRA IL MESSAGGIO NEL CICLO CORRENTE
+        repliedThisCycle.add(currentMessageId);
+
+        // REGISTRA SOLO DOPO L'INVIO RIUSCITO
+        await markEmailAsProcessed(
+          gmail,
+          email.id,
+          sofiaProcessedLabelId
+        );
+
+        console.log(
+          "Sofia ha risposto automaticamente a:",
+          recipient,
+          "Messaggio:",
+          result.data.id
+        );
+
 
         // REGISTRA IL MESSAGGIO NEL CICLO CORRENTE
         repliedThisCycle.add(currentMessageId);
