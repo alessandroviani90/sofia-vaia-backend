@@ -765,6 +765,11 @@ const senderName = senderMatch
           {
             role: "user",
             content:
+
+              "DATI DEL MITTENTE DELL'ULTIMA EMAIL:\n" +
+"Nome: " + (senderName || "Non disponibile") + "\n" +
+"Indirizzo email: " + senderEmail + "\n\n" +
+              
               "STORICO DELLA CONVERSAZIONE EMAIL:\n" +
               (email.threadHistory || [])
                 .map(m =>
