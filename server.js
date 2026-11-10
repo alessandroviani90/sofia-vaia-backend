@@ -957,7 +957,7 @@ if (!rispostaAEmailSofia && !emailIonos) {
         );
 
         // GENERA LA RISPOSTA
-        const body = await generateSofiaEmailReply(email);
+      const body = await generateSofiaEmailReply(email, emailIonos);
 
         // INVIA LA RISPOSTA
         const result = await sendReply(gmail, {
