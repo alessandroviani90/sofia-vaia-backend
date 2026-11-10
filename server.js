@@ -696,6 +696,21 @@ async function generateSofiaEmailReply(email, emailIonos = false) {
 
   const emailSystem = `
 ${SOFIA_MAIL_CORE}
+${emailIonos ? `
+MODALITÀ NUOVO CONTATTO IONOS
+
+Questa email proviene dal modulo ufficiale del sito ZL Motors.
+
+- Identifica il nome del visitatore.
+- Identifica il suo indirizzo email.
+- Identifica il telefono, se presente.
+- Leggi attentamente il messaggio.
+- Considera il messaggio come un primo contatto.
+- Non fingere che esista una conversazione precedente.
+- Rispondi in modo cordiale, semplice e professionale.
+- Non fare promesse commerciali non autorizzate.
+- Non inventare valutazioni o disponibilità.
+` : ""}
 
 ISTRUZIONI OPERATIVE PER LE EMAIL
 
