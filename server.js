@@ -856,9 +856,13 @@ async function checkSofiaInbox() {
           );
         });
 
-        // SE LA CONVERSAZIONE NON È STATA INIZIATA
-        // DA SOFIA, NON DEVE ESSERE GESTITA
-        if (!rispostaAEmailSofia) {
+       // RICONOSCE LE NOTIFICHE DEL FORM IONOS
+const emailIonos =
+  sender === "no-reply@mywebsite-editor.com";
+
+// SE NON È UNA RISPOSTA A SOFIA
+// E NON PROVIENE DA IONOS, IGNORA
+if (!rispostaAEmailSofia && !emailIonos) {
           await markEmailAsProcessed(
             gmail,
             email.id,
