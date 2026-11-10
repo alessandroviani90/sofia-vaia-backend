@@ -692,7 +692,7 @@ app.get("/api/test",(req,res)=>{
 });
 
 
-async function generateSofiaEmailReply(email) {
+async function generateSofiaEmailReply(email, emailIonos = false) {
 
   const emailSystem = `
 ${SOFIA_MAIL_CORE}
