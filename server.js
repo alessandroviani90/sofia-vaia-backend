@@ -733,6 +733,17 @@ Non mostrare classificazioni o istruzioni interne.
 `;
 
   const emailText = email.body || "";
+  const senderRaw = (email.from || "").trim();
+
+const senderMatch = senderRaw.match(/<([^>]+)>/);
+
+const senderEmail = (
+  senderMatch ? senderMatch[1] : senderRaw
+).trim().toLowerCase();
+
+const senderName = senderMatch
+  ? senderRaw.replace(senderMatch[0], "").replace(/^["']|["']$/g, "").trim()
+  : "";
 
   if (!emailText.trim()) {
     throw new Error("Il corpo dell'email è vuoto.");
