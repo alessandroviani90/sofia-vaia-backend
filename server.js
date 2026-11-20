@@ -534,6 +534,32 @@ REGOLE FONDAMENTALI
     });
   }
 });
+// ======================================
+// ARCHIVIO DEALER VA.IA
+// ======================================
+
+app.get("/api/dealers", (req, res) => {
+  res.json({
+    ok: true,
+    dealers
+  });
+});
+
+app.get("/api/dealers/:id", (req, res) => {
+  const dealer = dealers[req.params.id];
+
+  if (!dealer) {
+    return res.status(404).json({
+      ok: false,
+      error: "Concessionaria non trovata."
+    });
+  }
+
+  res.json({
+    ok: true,
+    dealer
+  });
+});
 
 const sofiaLabHistory = new Map();
 
