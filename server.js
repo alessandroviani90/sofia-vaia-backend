@@ -11,6 +11,7 @@ import auto, { fontiWeb } from "./data/auto.js";
 import { google } from "googleapis";
 import { SOFIA_CORE } from "./sofia-core.js";
 import { SOFIA_MAIL_CORE } from "./mail-core.js";
+import dealers from "./dealers.js";
 
 const app = express();
 
