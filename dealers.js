@@ -31,4 +31,4 @@ const dealers = {
   }
 };
 
-module.exports = dealers;
+export default dealers;
