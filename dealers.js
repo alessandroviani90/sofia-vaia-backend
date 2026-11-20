@@ -4,14 +4,14 @@ const dealers = {
     id: "zlmotors",
     denominazione: "ZL Motors",
     ubicazione: "via Lombardia2, Sarmeola di Tubano (PD)",
-    referente: "Alessandro",
+    referente: "Ludovico",
     telefono: "3518889999",
     email: "info@zlmotors.it",
 
     calendar: {
       provider: "google",
-      calendarId: "",
-      credentialEnv: "GOOGLE_TOKEN_ZLMOTORS"
+      calendarId: "ludovicozagani@gmail.com",
+      credentialEnv: "https://calendar.google.com/calendar/u/0/r"
     }
   },
 
