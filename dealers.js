@@ -3,10 +3,10 @@ const dealers = {
   zlmotors: {
     id: "zlmotors",
     denominazione: "ZL Motors",
-    ubicazione: "",
-    referente: "",
-    telefono: "",
-    email: "",
+    ubicazione: "via Lombardia2, Sarmeola di Tubano (PD)",
+    referente: "Alessandro",
+    telefono: "3518889999",
+    email: "info@zlmotors.it",
 
     calendar: {
       provider: "google",
@@ -17,11 +17,11 @@ const dealers = {
 
   brama: {
     id: "brama",
-    denominazione: "Brama",
-    ubicazione: "",
-    referente: "",
-    telefono: "",
-    email: "",
+    denominazione: "Brama Auto",
+    ubicazione: "Via Bernardi 2, Maserà di Padova",
+    referente: "Mattia",
+    telefono: "3559998888",
+    email: "commerciale@bramarent.it",
 
     calendar: {
       provider: "google",
