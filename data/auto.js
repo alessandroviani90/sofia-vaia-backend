@@ -10,3 +10,4 @@ const fontiWeb = [
 ];
 
 export { fontiWeb };
+export default [];
