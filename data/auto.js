@@ -15,159 +15,16 @@ const auto = [
     azienda: "ZLmotors",
     stato: "disponibile"
   },
-  {
-    id: 2,
-    marca: "Fiat",
-    modello: "500C",
-    versione: "1.2 GQ 69 CV Collection",
-    colore: "Bordeaux metallizzato ",
-    anno: 2015,
-    km: 79000,
-    prezzo: 8500,
-    alimentazione: "benzina",
-    cambio: "manuale",
-    potenza_cv: 69,
-    localita: "Padova",
-    azienda: "ZLmotors",
-    stato: "disponibile"
-  },
-  {
-    id: 3,
-    marca: "Fiat",
-    modello: "Tipo",
-    versione: "5p 1.6 MJT S-Design 120 CV",
-    colore: "Blu pastello",
-    anno: 2018,
-    km: 79000,
-    prezzo: 9400,
-    alimentazione: "diesel",
-    cambio: "manuale",
-    potenza_cv: 120,
-    localita: "Padova",
-    azienda: "ZLmotors",
-    stato: "disponibile"
-  },
-  {
-    id: 4,
-    marca: "Ford",
-    modello: "Tourneo Courier",
-    versione: "1.0 EcoBoost Sport",
-    colore: "rosso pastello",
-    anno: 2019,
-    km: 129000,
-    prezzo: 8500,
-    alimentazione: "benzina",
-    cambio: "manuale",
-    potenza_cv: 101,
-    localita: "Padova",
-    stato: "disponibile"
-  },
-  {
-    id: 5,
-    marca: "Fiat",
-    modello: "500",
-    versione: "1.3 MJT 16V GQ 95 CV",
-    anno: 2015,
-    km: 127000,
-    prezzo: 6500,
-    alimentazione: "diesel",
-    cambio: "manuale",
-    potenza_cv: 95,
-    localita: "Padova",
-     azienda: "ZLmotors",
-    stato: "disponibile"
-  },
-  {
-
-    id: 6,
-    marca: "Fiat",
-    modello: "1.0 firefly hybrid ",
-   versione: "pop",
-   colore: "bianco",
-    anno: 2023,
-    km: 32000,
-    prezzo: 8990,
-    alimentazione: "benzina/hybrid",
-    cambio: "manuale",
-    potenza_cv: 69,
-    localita: "Milano",
-    azienda: "Achille Car srl",
-    stato: "disponibile",
-  },
-
-  {
-    id: 7,
-    marca: "Fiat",
-    modello: "Panda 1.2",
-   versione: "pop",
-   colore: "arancio",
-    anno: 2022,
-    km: 52000,
-    prezzo: 8990,
-    alimentazione: "benzina",
-    cambio: "manuale",
-    potenza_cv: 69,
-    localita: "Galbiate Lecco",
-    azienda: "Negri Auto",
-    stato: "disponibile",
-  },
-
- {
-    id: 8,
-    marca: "Ford",
-    modello: "Fiesta 1.4 GPL 5 Porte ",
-   versione: "titanium",
-   colore: "grigio metallizzato",
-    anno: 2016,
-    km: 99000,
-    prezzo: 12900,
-    alimentazione: "benzina/gpl",
-    cambio: "manuale",
-    potenza_cv:95 ,
-    localita: " Torino",
-    azienda: " D & G Car Di Disalvatore Damiano",
-    stato: "disponibile",
-  },
-{
-    id: 9,
-    marca: "Ford",
-    modello: "1.0 ecoboost hybrid ",
-   versione: "ST- line",
-   colore: "grigio chiaro metallizzato",
-    anno: 2021,
-    km: 69000,
-    prezzo: 12900,
-    alimentazione: "benzina/hybrid",
-    cambio: "manuale",
-    potenza_cv:125 ,
-    localita: "Moncalieri Torino",
-    azienda: "Authos spa",
-    stato: "disponibile",
-  },
-
-{
-  id: 10,
-  marca: "Dacia",
-  modello: "Duster dci ",
-  versione: "Laureate 4x2",
-  colore: "nero",
-  anno: 2015,
-  km: 166000,
-  prezzo: 7500,
-  alimentazione: "diesel",
-  cambio: "manuale",
-  potenza_cv: 110,
-  localita: "Cologno Monzese Milano",
-  azienda: "Mini car",
-  stato: "disponibile"
-  }
-];
-
+ 
 export const fontiWeb = [
+  "https://www.autoscout24.it/concessionari/ferri-auto-srl-limena-pd?cq_src=google_ads&cq_cmp=9737206534&cq_term=auto%20gpl%20km%200%20veneto&cq_plac=&cq_net=g&cq_plt=gp&utm_source=google&utm_campaign=IT_AS24_ugom_web_lead_[s]_(CG)_Car&utm_medium=cpc&utm_content=(CG)_km_0&utm_term=auto%20gpl%20km%200%20veneto&gad_source=1&gad_campaignid=9737206534&gbraid=0AAAAAD3CGfdAB6ptP9WcbSAf9KKJDiz2S&gclid=CjwKCAiA5Y_YBhBbEiwAK5Dl7YzkZ3cM0FJKgoAUIuRa-szh8JCW30Da6Ny7OEd8Jdrh7Tv_W_xHxBoCGm8QAvD_BwE
   "https://www.autoscout24.it/concessionari/z-l-motors-di-zagani-lulzim",
   "https://www.automobile.it/concessionari/brama-auto/16123",
   "https://impresapiu.subito.it/shops/49956-privacar-padova-ovest"
+  "https://www.autoscout24.it/concessionari/effettoauto-s-r-l?srsltid=AYCX9vLxlmUZc2Ye1IElcFZHDbpuE8b6hECdX9NoszTIEv8d_k9qGT_l 
+  "https://www.autoscout24.it/concessionari/auto-vi-srl?cq_src=google_ads&cq_cmp=9737206534&cq_term=&cq_plac=&cq_net=g&cq_plt=gp&utm_source=google&utm_campaign=IT_AS24_ugom_web_lead_[s]_(CG)_Car&utm_medium=cpc&utm_content=(CG)_Auto&utm_term=&gad_source=1&gad_campaignid=9737206534&gbraid=0AAAAAD3CGfdAB6ptP9WcbSAf9KKJDiz2S&gclid=CjwKCAiA5Y_YBhBbEiwAK5Dl7ap-GwdJ4e6aKX5smcJv1y55swlMUq0dgOQFebIImrktmV9vFbs9FRoCkXEQAvD_BwE
 ];
+
 
 export default auto;
 
