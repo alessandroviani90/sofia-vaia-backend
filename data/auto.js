@@ -22,9 +22,11 @@ export const fontiWeb = [
   "https://www.automobile.it/concessionari/brama-auto/16123",
   "https://impresapiu.subito.it/shops/49956-privacar-padova-ovest"
   "https://www.autoscout24.it/concessionari/effettoauto-s-r-l?srsltid=AYCX9vLxlmUZc2Ye1IElcFZHDbpuE8b6hECdX9NoszTIEv8d_k9qGT_l 
+  "https://impresapiu.subito.it/shops/58264-of-garage66?xtfrom=form_filter&q=#show_all_details
   "https://www.autoscout24.it/concessionari/auto-vi-srl?cq_src=google_ads&cq_cmp=9737206534&cq_term=&cq_plac=&cq_net=g&cq_plt=gp&utm_source=google&utm_campaign=IT_AS24_ugom_web_lead_[s]_(CG)_Car&utm_medium=cpc&utm_content=(CG)_Auto&utm_term=&gad_source=1&gad_campaignid=9737206534&gbraid=0AAAAAD3CGfdAB6ptP9WcbSAf9KKJDiz2S&gclid=CjwKCAiA5Y_YBhBbEiwAK5Dl7ap-GwdJ4e6aKX5smcJv1y55swlMUq0dgOQFebIImrktmV9vFbs9FRoCkXEQAvD_BwE
 ];
 
 
 export default auto;
+
 
