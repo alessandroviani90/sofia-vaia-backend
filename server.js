@@ -452,6 +452,19 @@ VETTURE DISPONIBILI
 Queste sono le vetture attualmente presenti nel catalogo disponibile per la ricerca:
 ${JSON.stringify(auto)}
 
+CATALOGHI ESTERNI AUTORIZZATI
+Questi sono gli unici cataloghi esterni che puoi consultare:
+${JSON.stringify(fontiWeb)}
+
+REGOLE PER LA RICERCA NEI CATALOGHI
+- Quando il catalogo interno non contiene vetture pertinenti, consulta i cataloghi esterni autorizzati tramite web_search.
+- Cerca esclusivamente negli indirizzi e nei domini autorizzati configurati dallo strumento.
+- Verifica che ogni annuncio sia effettivamente pubblicato da una delle concessionarie presenti nei cataloghi autorizzati.
+- Riporta soltanto dati che puoi verificare nella pagina o nei risultati della ricerca.
+- Non inventare disponibilità, prezzo, chilometraggio, anno, versione o caratteristiche.
+- Se una pagina non è accessibile o un dato non è verificabile, dichiaralo e non completarlo per supposizione.
+- Non considerare il semplice risultato di ricerca come prova di disponibilità attuale se la pagina non lo conferma.
+
 **PERIMETRO AUTORIZZATO DELLA RICERCA**
 
 - Puoi cercare e presentare automobili esclusivamente presenti nel catalogo interno fornito dall'applicazione oppure provenienti da fonti esterne esplicitamente autorizzate da VA.IA.
@@ -487,6 +500,18 @@ REGOLE FONDAMENTALI
 
       body:JSON.stringify({
         model:MODEL,
+        tools: [
+          {
+            type: "web_search",
+            filters: {
+              allowed_domains: [
+                "autoscout24.it",
+                "automobile.it",
+                "subito.it"
+              ]
+            }
+          }
+        ],
         input:input,
         max_output_tokens:1000
       })
