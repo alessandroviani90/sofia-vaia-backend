@@ -3,7 +3,7 @@ const dealers = {
   zlmotors: {
     id: "zlmotors",
     denominazione: "ZL Motors",
-    ubicazione: "via Lombardia2, Sarmeola di Tubano (PD)",
+    ubicazione: "via Lombardia2, Sarmeola di Rubano (PD)",
     referente: "Ludovico",
     telefono: "3518889999",
     email: "info@zlmotors.it",
